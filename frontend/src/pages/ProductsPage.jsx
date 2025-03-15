@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { products as initialProducts } from "../data/products";
-import { FiHeart, FiSearch, FiShoppingBag } from "react-icons/fi";
+import { FiHeart, FiSearch, FiShoppingBag, FiMessageSquare } from "react-icons/fi";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 
@@ -191,6 +191,18 @@ const ProductsPage = () => {
                   {product.name}
                 </h2>
                 <p className="text-sm text-gray-600">₹{product.price.toFixed(2)}</p>
+
+                {/* Likes & Comments Count */}
+                <div className="flex justify-center gap-4 text-gray-600 text-sm mt-2">
+                  <span className="flex items-center gap-1">
+                    <FiHeart className="text-red-500" />
+                    {product.likes} Likes
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <FiMessageSquare className="text-blue-500" />
+                    {product.comments} Comments
+                  </span>
+                </div>
               </div>
             </div>
           ))
@@ -205,3 +217,4 @@ const ProductsPage = () => {
 };
 
 export default ProductsPage;
+
