@@ -15,9 +15,9 @@ const Home = () => {
       {/* Hero Section */}
 <section
   className="relative w-full h-[70vh] bg-cover bg-center bg-no-repeat brightness-75 overflow-hidden"
-  style={{ backgroundImage: "url('/hero-image.jpg')" }}
+  style={{ backgroundImage: "url('https://static.vecteezy.com/system/resources/previews/013/856/724/non_2x/handicrafts-from-rattan-exhibited-by-the-dayak-tribe-the-work-of-the-dayak-tribe-free-photo.jpg')" }}
 >
-  <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 md:p-8 bg-black/50 backdrop-blur-sm">
+  <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 md:p-8 bg-black/50 backdrop-blur-none">
     {/* Title with Fade-In Animation */}
     <h1
       className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 max-w-4xl opacity-0 animate-fade-in"
