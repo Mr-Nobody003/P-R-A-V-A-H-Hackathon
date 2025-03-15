@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import Products from "./pages/Products";
+import ProductsPage from "./pages/ProductsPage"; // Ensure this matches the Route
+import ProductPage from "./pages/ProductPage"; // Import ProductPage
 import Footer from "./components/Footer";
 //import CartPage from "./pages/CartPage";
 
@@ -11,10 +12,11 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/products" element={<Products />} />
+        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/products/:id" element={<ProductPage />} />
         {/* <Route path="/cart" element={<CartPage />} /> */}
       </Routes>
-      <Footer/>
+      <Footer />
     </Router>
   );
 }

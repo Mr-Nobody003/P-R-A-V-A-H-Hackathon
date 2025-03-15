@@ -15,9 +15,11 @@
     "autoprefixer": "^10.4.21",
     "lucide-react": "^0.482.0",
     "postcss": "^8.5.3",
+    "rc-slider": "^11.1.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-router-dom": "^7.3.0",
     "tailwindcss": "^4.0.14"
   },
