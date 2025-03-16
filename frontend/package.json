@@ -13,6 +13,7 @@
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.0.14",
     "autoprefixer": "^10.4.21",
+    "axios": "^1.8.3",
     "lucide-react": "^0.482.0",
     "postcss": "^8.5.3",
     "rc-slider": "^11.1.8",

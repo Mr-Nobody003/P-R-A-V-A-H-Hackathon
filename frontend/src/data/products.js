@@ -11,7 +11,7 @@ export const products = [
     {
       id: 2,
       name: "Bamboo Handbag",
-      image: "/products/handbag.png",
+      image: "https://jutecottage.co.in/cdn/shop/products/StudioSession-6820_00176copy_1024x1024@2x.jpg?v=1609246622",
       price: 45.0,
       category: "Accessories",
       region: "Nagaland",

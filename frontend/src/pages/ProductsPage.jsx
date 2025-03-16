@@ -1,31 +1,39 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { products as initialProducts } from "../data/products";
+import axios from "axios";
 import { FiHeart, FiSearch, FiShoppingBag, FiMessageSquare } from "react-icons/fi";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 
 const ProductsPage = () => {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [wishlist, setWishlist] = useState([]);
   const [filters, setFilters] = useState({
     category: "",
     region: "",
     artist: "",
-    priceRange: [0, 500], // Min-Max Price Range
+    priceRange: [0, 500], // Min-Max Price
   });
 
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
-  // Toggle Wishlist Function
+  // 📌 Fetch Products from Backend
+  useEffect(() => {
+    axios
+      .get("http://localhost:5556/api/products") // Backend API
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error("Error fetching products:", err));
+  }, []);
+
+  // 📌 Toggle Wishlist
   const toggleWishlist = (id) => {
     setWishlist((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
 
-  // Sorting Function
+  // 📌 Sorting Function
   const handleSort = (e) => {
     const value = e.target.value;
     setSortBy(value);
@@ -40,7 +48,7 @@ const ProductsPage = () => {
     setProducts(sortedProducts);
   };
 
-  // Filter Change Function
+  // 📌 Filter Change Function
   const handleFilter = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({
@@ -49,12 +57,12 @@ const ProductsPage = () => {
     }));
   };
 
-  // Handle Price Range Change
+  // 📌 Handle Price Range Change
   const handlePriceChange = (value) => {
     setFilters({ ...filters, priceRange: value });
   };
 
-  // Filter & Sort Products
+  // 📌 Filter & Sort Products
   const filteredProducts = products.filter((product) => {
     return (
       (filters.category === "" || product.category === filters.category) &&
@@ -126,21 +134,6 @@ const ProductsPage = () => {
           <option value="Manipur">Manipur</option>
           <option value="Meghalaya">Meghalaya</option>
         </select>
-
-        {/* Artist Filter */}
-        <select
-          name="artist"
-          onChange={handleFilter}
-          className="border border-gray-300 rounded-lg px-4 py-2"
-        >
-          <option value="">All Artists</option>
-          <option value="Rina Das">Rina Das</option>
-          <option value="Tenzing Lotha">Tenzing Lotha</option>
-          <option value="Devi Sharma">Devi Sharma</option>
-          <option value="Anupam Singh">Anupam Singh</option>
-          <option value="Lima Ao">Lima Ao</option>
-          <option value="Sita Kalita">Sita Kalita</option>
-        </select>
       </div>
 
       {/* Product Grid */}
@@ -148,9 +141,9 @@ const ProductsPage = () => {
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
             <div
-              key={product.id}
+              key={product._id}
               className="group relative cursor-pointer overflow-hidden rounded-lg"
-              onClick={() => navigate(`/products/${product.id}`)} // Navigate to product page
+              onClick={() => navigate(`/products/${product._id}`)}
             >
               {/* Product Image */}
               <img
@@ -158,32 +151,6 @@ const ProductsPage = () => {
                 alt={product.name}
                 className="w-full h-60 object-cover group-hover:scale-110 transition-transform duration-300"
               />
-
-              {/* Hover Overlay */}
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
-                {/* Wishlist Button */}
-                <button
-                  className="text-white text-xl bg-black/50 p-2 rounded-full hover:bg-black/70"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleWishlist(product.id);
-                  }}
-                >
-                  <FiHeart
-                    className={wishlist.includes(product.id) ? "text-red-500" : "text-white"}
-                  />
-                </button>
-
-                {/* View Button */}
-                <button className="text-white text-xl bg-black/50 p-2 rounded-full hover:bg-black/70">
-                  <FiSearch />
-                </button>
-
-                {/* Add to Cart Button */}
-                <button className="text-white text-xl bg-black/50 p-2 rounded-full hover:bg-black/70">
-                  <FiShoppingBag />
-                </button>
-              </div>
 
               {/* Product Info */}
               <div className="p-2 text-center">
@@ -207,9 +174,7 @@ const ProductsPage = () => {
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500 col-span-full">
-            No products found.
-          </p>
+          <p className="text-center text-gray-500 col-span-full">No products found.</p>
         )}
       </div>
     </div>
@@ -217,4 +182,3 @@ const ProductsPage = () => {
 };
 
 export default ProductsPage;
-
