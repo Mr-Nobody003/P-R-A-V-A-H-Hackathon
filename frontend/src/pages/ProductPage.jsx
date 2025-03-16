@@ -1,33 +1,45 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { products } from "../data/products";
 import { FiHeart, FiShoppingBag, FiArrowLeft } from "react-icons/fi";
 
 const ProductPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [wishlist, setWishlist] = useState(new Set());
   const [cart, setCart] = useState(new Set());
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5556";
+
   useEffect(() => {
-    const foundProduct = products.find((item) => item.id.toString() === id);
-    if (foundProduct) {
-      setProduct(foundProduct);
-    } else {
-      // Display message instead of immediate redirect
-      setProduct({ error: "Product not found" });
-    }
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/products/${id}`);
+        if (!response.ok) {
+          throw new Error("Product not found");
+        }
+        const data = await response.json();
+        setProduct(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
   }, [id]);
 
-  if (!product) {
+  if (loading) {
     return <p className="text-center text-gray-500">Loading product details...</p>;
   }
 
-  if (product.error) {
+  if (error) {
     return (
       <div className="text-center text-gray-600">
-        <p>{product.error}</p>
+        <p>{error}</p>
         <button
           className="mt-4 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
           onClick={() => navigate("/products")}
@@ -89,15 +101,9 @@ const ProductPage = () => {
 
           {/* Product Meta Info */}
           <div className="mt-6 space-y-2 text-sm text-gray-800">
-            <p>
-              <span className="font-semibold">Category:</span> {product.category}
-            </p>
-            <p>
-              <span className="font-semibold">Region:</span> {product.region}
-            </p>
-            <p>
-              <span className="font-semibold">Artist:</span> {product.artist}
-            </p>
+            <p><span className="font-semibold">Category:</span> {product.category}</p>
+            <p><span className="font-semibold">Region:</span> {product.region}</p>
+            <p><span className="font-semibold">Artist:</span> {product.artist}</p>
           </div>
 
           {/* Action Buttons */}
