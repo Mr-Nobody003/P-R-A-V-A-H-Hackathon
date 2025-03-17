@@ -12,24 +12,11 @@ dotenv.config();
 const app = express();
 app.use(express.json()); // Middleware for JSON
 
-const allowedOrigins = [
-  "https://northeast-crafts.vercel.app/",
-  "http://localhost:5000",
-];
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: ["http://localhost:5000","https://northeast-crafts.vercel.app"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+}));
 const PORT = process.env.PORT || 5556;
 const MONGO_URI = process.env.MONGO_URI;
 
