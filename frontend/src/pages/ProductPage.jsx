@@ -12,6 +12,7 @@ const ProductPage = () => {
   const [cart, setCart] = useState(new Set());
 
   const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5556";
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -59,16 +60,37 @@ const ProductPage = () => {
     });
   };
 
-  // Add to Cart
-  const addToCart = () => {
-    if (window.confirm("Add this item to your cart?")) {
-      setCart((prev) => new Set(prev).add(product.id));
+  // Add to Cart API Request
+  const addToCart = async () => {
+    if (!token) {
+      alert("Please log in to add items to your cart.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/cart/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`,
+        },
+        body: JSON.stringify({ productId: product._id }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert("Product added to cart!");
+        setCart((prev) => new Set(prev).add(product._id));
+      } else {
+        alert(data.message || "Failed to add product to cart.");
+      }
+    } catch (error) {
+      alert("Error adding to cart. Please try again later.");
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Back Button */}
       <button
         className="flex items-center gap-2 text-gray-700 hover:text-black transition mb-4"
         onClick={() => navigate("/products")}
@@ -77,14 +99,12 @@ const ProductPage = () => {
       </button>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Product Image */}
         <div className="relative">
           <img
             src={product.image}
             alt={product.name}
             className="w-full h-96 object-cover rounded-lg shadow-md"
           />
-          {/* Wishlist Button */}
           <button
             className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
             onClick={toggleWishlist}
@@ -93,20 +113,17 @@ const ProductPage = () => {
           </button>
         </div>
 
-        {/* Product Details */}
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold text-gray-800">{product.name}</h1>
           <p className="text-lg text-gray-600 mt-2">₹{product.price.toFixed(2)}</p>
           <p className="text-gray-700 mt-4">{product.description}</p>
 
-          {/* Product Meta Info */}
           <div className="mt-6 space-y-2 text-sm text-gray-800">
             <p><span className="font-semibold">Category:</span> {product.category}</p>
             <p><span className="font-semibold">Region:</span> {product.region}</p>
             <p><span className="font-semibold">Artist:</span> {product.artist}</p>
           </div>
 
-          {/* Action Buttons */}
           <div className="mt-6 flex gap-4">
             <button
               className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
