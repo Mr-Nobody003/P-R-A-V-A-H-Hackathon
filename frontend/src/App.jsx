@@ -6,7 +6,7 @@ import ProductPage from "./pages/ProductPage"; // Import ProductPage
 import Footer from "./components/Footer";
 import Artisan from "./pages/Artisans";
 //import CartPage from "./pages/CartPage";
-
+import "./i18n";
 function App() {
   return (
     <Router>

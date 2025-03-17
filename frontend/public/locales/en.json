@@ -1,0 +1,30 @@
+{
+    "hero": {
+      "title": "Discover the Artisanal Treasures of Northeast India",
+      "subtitle": "Authentic handcrafted products directly from skilled artisans, preserving centuries of tradition",
+      "searchPlaceholder": "Search for crafts, regions, or artisans...",
+      "exploreButton": "Explore Now"
+    },
+    "categories": {
+      "title": "Explore Craft Categories",
+      "viewAll": "View All Categories"
+    },
+    "featuredProducts": {
+      "title": "Featured Products",
+      "viewAll": "View All"
+    },
+    "artisans": {
+      "title": "Meet Our Artisans",
+      "discoverMore": "Discover More Artisans"
+    },
+    "regional": {
+      "title": "Explore Northeast India"
+    },
+    "newsletter": {
+      "title": "Stay Connected",
+      "subtitle": "Subscribe to receive updates on new artisans, products, and cultural stories",
+      "placeholder": "Your email address",
+      "subscribeButton": "Subscribe"
+    }
+  }
+  
