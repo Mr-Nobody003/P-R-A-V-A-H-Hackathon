@@ -13,8 +13,8 @@ const app = express();
 app.use(express.json()); // Middleware for JSON
 
 const allowedOrigins = [
-  "http://localhost:5000",
   "https://northeast-crafts.vercel.app/",
+  "http://localhost:5000",
 ];
 
 app.use(
