@@ -5,6 +5,9 @@ import ProductsPage from "./pages/ProductsPage"; // Ensure this matches the Rout
 import ProductPage from "./pages/ProductPage"; // Import ProductPage
 import Footer from "./components/Footer";
 import Artisan from "./pages/Artisans";
+import Login from "./pages/Login"
+import Signup from "./pages/Signup";
+import Profile from "./pages/Profile";
 //import CartPage from "./pages/CartPage";
 
 function App() {
@@ -12,8 +15,11 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/profile" element={<Profile />} />
 
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/artisans" element={<Artisan />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/products/:id" element={<ProductPage />} />

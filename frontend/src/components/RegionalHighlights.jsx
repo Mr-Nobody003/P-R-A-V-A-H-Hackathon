@@ -6,7 +6,7 @@ const regions = [
   {
     id: "assam",
     name: "Assam",
-    image: "/placeholder.svg",
+    image: "https://th.bing.com/th/id/OIG1.MD8mXsdU4GjmEItVRdCn?w=1024&h=1024&rs=1&pid=ImgDetMain",
     description:
       "Known for its exquisite silk weaving traditions, including Muga, Eri, and Pat silk.",
     specialties: ["Silk Weaving", "Bell Metal Craft", "Terracotta"],
@@ -14,7 +14,7 @@ const regions = [
   {
     id: "arunachal-pradesh",
     name: "Arunachal Pradesh",
-    image: "/placeholder.svg",
+    image: "https://th.bing.com/th/id/OIG2.yfMEH.ScYUs3rye6J5f9?pid=ImgGn",
     description:
       "Home to diverse tribal crafts, including bamboo and cane work, wood carving, and handwoven textiles.",
     specialties: ["Bamboo & Cane Craft", "Wood Carving", "Handwoven Textiles"],
@@ -22,7 +22,7 @@ const regions = [
   {
     id: "manipur",
     name: "Manipur",
-    image: "/placeholder.svg",
+    image: "https://th.bing.com/th/id/OIG1.Mw5zBNPmYnAhegc_AJZK?pid=ImgGn",
     description:
       "Famous for its fine pottery, handloom textiles, and intricate bamboo crafts.",
     specialties: ["Pottery", "Handloom", "Bamboo Craft"],
@@ -30,7 +30,7 @@ const regions = [
   {
     id: "meghalaya",
     name: "Meghalaya",
-    image: "/placeholder.svg",
+    image: "https://th.bing.com/th/id/OIG2.UFP5vGQsZCpJRldCQ0Rr?w=1024&h=1024&rs=1&pid=ImgDetMain",
     description:
       "Renowned for cane and bamboo crafts, with distinctive styles from the Khasi, Jaintia, and Garo tribes.",
     specialties: ["Cane Craft", "Bamboo Products", "Traditional Jewelry"],
@@ -38,7 +38,7 @@ const regions = [
   {
     id: "mizoram",
     name: "Mizoram",
-    image: "/placeholder.svg",
+    image: "https://th.bing.com/th/id/OIG1.v3fCwgXJh2tdkddE_7Uc?pid=ImgGn",
     description:
       "Known for its intricate bamboo crafts, colorful handwoven shawls, and traditional Mizo handicrafts.",
     specialties: ["Handwoven Shawls", "Bamboo & Cane Craft", "Handicrafts"],
@@ -46,7 +46,7 @@ const regions = [
   {
     id: "nagaland",
     name: "Nagaland",
-    image: "/placeholder.svg",
+    image: "https://th.bing.com/th/id/OIG2.JnOmMokkl9aucLC.oL3E?pid=ImgGn",
     description:
       "Home to 16 major tribes, each with distinct craft traditions including wood carving and textile weaving.",
     specialties: ["Wood Carving", "Tribal Textiles", "Bamboo Work"],
@@ -54,7 +54,7 @@ const regions = [
   {
     id: "sikkim",
     name: "Sikkim",
-    image: "/placeholder.svg",
+    image: "https://th.bing.com/th/id/OIG2.oIChAGWEuvoMgt.croR8?pid=ImgGn",
     description:
       "Famous for its Thangka paintings, handwoven carpets, and traditional Lepcha crafts.",
     specialties: ["Thangka Painting", "Handwoven Carpets", "Lepcha Weaving"],
@@ -62,7 +62,7 @@ const regions = [
   {
     id: "tripura",
     name: "Tripura",
-    image: "/placeholder.svg",
+    image: "https://th.bing.com/th/id/OIG2.BA4iCysMbcVeBn7QBe36?pid=ImgGn",
     description:
       "Renowned for its tribal handloom, cane furniture, and bamboo handicrafts.",
     specialties: ["Handloom Weaving", "Cane & Bamboo Craft", "Furniture Making"],
