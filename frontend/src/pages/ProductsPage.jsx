@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { FiHeart, FiSearch, FiShoppingBag, FiMessageSquare } from "react-icons/fi";
+import { FiHeart, FiMessageSquare } from "react-icons/fi";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
-  const [sortBy, setSortBy] = useState("");
   const [wishlist, setWishlist] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [sortBy, setSortBy] = useState("");
   const [filters, setFilters] = useState({
     category: "",
     region: "",
@@ -17,13 +18,22 @@ const ProductsPage = () => {
   });
 
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5556";
 
-  // 📌 Fetch Products from Backend
   useEffect(() => {
-    axios
-      .get("http://localhost:5556/api/products") // Backend API
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error("Error fetching products:", err));
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/products`);
+        if (!response.ok) throw new Error("Failed to fetch products");
+        const data = await response.json();
+        setProducts(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
   }, []);
 
   // 📌 Toggle Wishlist
@@ -33,51 +43,32 @@ const ProductsPage = () => {
     );
   };
 
-  // 📌 Sorting Function
-  const handleSort = (e) => {
-    const value = e.target.value;
-    setSortBy(value);
-    let sortedProducts = [...products];
-
-    if (value === "priceLowHigh") {
-      sortedProducts.sort((a, b) => a.price - b.price);
-    } else if (value === "priceHighLow") {
-      sortedProducts.sort((a, b) => b.price - a.price);
-    }
-
-    setProducts(sortedProducts);
-  };
-
-  // 📌 Filter Change Function
-  const handleFilter = (e) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // 📌 Handle Price Range Change
-  const handlePriceChange = (value) => {
-    setFilters({ ...filters, priceRange: value });
-  };
-
   // 📌 Filter & Sort Products
-  const filteredProducts = products.filter((product) => {
-    return (
-      (filters.category === "" || product.category === filters.category) &&
-      (filters.region === "" || product.region === filters.region) &&
-      (filters.artist === "" || product.artist === filters.artist) &&
-      product.price >= filters.priceRange[0] &&
-      product.price <= filters.priceRange[1]
-    );
-  });
+  const filteredProducts = products
+    .filter((product) => {
+      return (
+        (filters.category === "" || product.category === filters.category) &&
+        (filters.region === "" || product.region === filters.region) &&
+        (filters.artist === "" || product.artist === filters.artist) &&
+        product.price >= filters.priceRange[0] &&
+        product.price <= filters.priceRange[1]
+      );
+    })
+    .sort((a, b) => {
+      if (sortBy === "priceLowHigh") return a.price - b.price;
+      if (sortBy === "priceHighLow") return b.price - a.price;
+      return 0;
+    });
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-800 text-center mb-6">
         Explore Handcrafted Treasures
       </h1>
+
+      {/* Loading & Error Handling */}
+      {loading && <p className="text-center text-gray-600">Loading products...</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
 
       {/* Sorting & Filtering Options */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
@@ -92,7 +83,7 @@ const ProductsPage = () => {
             max={500}
             step={10}
             value={filters.priceRange}
-            onChange={handlePriceChange}
+            onChange={(value) => setFilters({ ...filters, priceRange: value })}
             trackStyle={[{ backgroundColor: "#4CAF50" }]}
             handleStyle={[{ borderColor: "#4CAF50" }, { borderColor: "#4CAF50" }]}
           />
@@ -100,7 +91,7 @@ const ProductsPage = () => {
 
         {/* Sorting */}
         <select
-          onChange={handleSort}
+          onChange={(e) => setSortBy(e.target.value)}
           className="border border-gray-300 rounded-lg px-4 py-2"
         >
           <option value="">Sort By</option>
@@ -111,7 +102,7 @@ const ProductsPage = () => {
         {/* Category Filter */}
         <select
           name="category"
-          onChange={handleFilter}
+          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
           className="border border-gray-300 rounded-lg px-4 py-2"
         >
           <option value="">All Categories</option>
@@ -125,7 +116,7 @@ const ProductsPage = () => {
         {/* Region Filter */}
         <select
           name="region"
-          onChange={handleFilter}
+          onChange={(e) => setFilters({ ...filters, region: e.target.value })}
           className="border border-gray-300 rounded-lg px-4 py-2"
         >
           <option value="">All Regions</option>
@@ -161,8 +152,11 @@ const ProductsPage = () => {
 
                 {/* Likes & Comments Count */}
                 <div className="flex justify-center gap-4 text-gray-600 text-sm mt-2">
-                  <span className="flex items-center gap-1">
-                    <FiHeart className="text-red-500" />
+                  <span
+                    className="flex items-center gap-1 cursor-pointer"
+                    onClick={() => toggleWishlist(product._id)}
+                  >
+                    <FiHeart className={wishlist.includes(product._id) ? "text-red-500" : "text-gray-400"} />
                     {product.likes} Likes
                   </span>
                   <span className="flex items-center gap-1">
