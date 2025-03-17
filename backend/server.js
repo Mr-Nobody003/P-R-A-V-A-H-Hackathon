@@ -4,6 +4,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import Product from "./models/Product.js";
 import Artisan from "./models/Artisian.js";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import User from "./models/user.js";
 dotenv.config();
 
 const app = express();
@@ -132,6 +135,135 @@ app.post("/api/artisans", async (req, res) => {
 });
 
   
+//signup api
+
+app.post("/api/signup", async (req, res) => {
+    try {
+      const { name, email, password } = req.body;
+  
+      // Check if all fields are provided
+      if (!name || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+  
+      // Check if email is already registered
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+  
+      // Hash the password before saving
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      // Create new user
+      const newUser = new User({
+        name,
+        email,
+        password: hashedPassword,
+        cart: [], // Empty cart initially
+      });
+  
+      await newUser.save();
+      res.status(201).json({ message: "User registered successfully!" });
+    } catch (err) {
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
+
+//login api
+app.post("/api/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+  
+      console.log("Login Attempt:", email, password); // 🛑 Check incoming data
+  
+      const user = await User.findOne({ email });
+      if (!user) {
+        console.log("User not found:", email); // 🛑 Debugging log
+        return res.status(400).json({ message: "Invalid email or password" });
+      }
+  
+      console.log("User found:", user); // 🛑 Check user data from DB
+  
+      if (!user.password) {
+        console.log("Password field is missing in DB for user:", user);
+        return res.status(500).json({ message: "Server error: Password missing" });
+      }
+  
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        console.log("Password does not match"); // 🛑 Debugging log
+        return res.status(400).json({ message: "Invalid email or password" });
+      }
+  
+      const token = jwt.sign({ userId: user._id }, "secretkey", { expiresIn: "1h" });
+      res.json({ token, user: { name: user.name, email: user.email, cart: user.cart } });
+  
+    } catch (err) {
+      console.error("Login Error:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+  
+
+//Middleware to Verify JWT
+const authMiddleware = (req, res, next) => {
+    const token = req.header("Authorization");
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+  
+    try {
+      const decoded = jwt.verify(token, "secretkey");
+      req.userId = decoded.userId;
+      next();
+    } catch (err) {
+      res.status(401).json({ message: "Invalid token" });
+    }
+  };
+
+
+  //api to add to cart
+
+  
+
+app.post("/api/cart/add", authMiddleware, async (req, res) => {
+    try {
+        const userId = req.userId; // Extracted from authMiddleware
+        const { productId } = req.body;
+
+        // Validate productId format
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({ message: "Invalid product ID format" });
+        }
+
+        const objectId = new mongoose.Types.ObjectId(productId); // Convert to ObjectId
+
+        // Check if product exists
+        const product = await Product.findById(objectId);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        // Find user and update cart
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Check if product is already in cart
+        if (user.cart.includes(objectId)) {
+            return res.status(400).json({ message: "Product already in cart" });
+        }
+
+        user.cart.push(objectId);
+        await user.save();
+
+        res.status(200).json({ message: "Product added to cart", cart: user.cart });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
 
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);

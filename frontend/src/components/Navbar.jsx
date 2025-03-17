@@ -1,10 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 import { useTranslation } from "react-i18next";
 
 const Navbar = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const { i18n } = useTranslation();
 
-  // Function to change language
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   const changeLanguage = (lang) => {
     i18n.changeLanguage(lang);
   };
@@ -13,7 +20,7 @@ const Navbar = () => {
     <nav className="bg-white shadow-md p-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="text-xl font-bold">Northeast Crafts</Link>
-        
+
         {/* Navigation Links */}
         <div className="flex items-center space-x-6">
           <Link to="/" className="hover:text-blue-600">Home</Link>
@@ -41,6 +48,22 @@ const Navbar = () => {
             <option value="ko">Kokborok</option>
             <option value="bn">বাংলা</option>
           </select>
+
+          {/* Authentication */}
+          {user ? (
+            <div className="flex items-center space-x-4">
+              <Link to="/profile" className="hover:text-blue-600 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                  <path d="M480-480q-79 0-134.5-55.5T290-670q0-79 55.5-134.5T480-860q79 0 134.5 55.5T670-670q0 79-55.5 134.5T480-480Zm0 80q108 0 182-74t74-182q0-108-74-182T480-780q-108 0-182 74t-74 182q0 108 74 182t182 74Zm0 360q-132 0-252-50t-220-138q-10-9-10-22t10-22q98-88 220-138t252-50q132 0 252 50t220 138q10 9 10 22t-10 22q-98 88-220 138t-252 50Zm0-80q108 0 206.5-38.5T872-295q-85-70-183.5-108.5T480-442q-108 0-206.5 38.5T88-295q85 70 183.5 108.5T480-148Z"/>
+                </svg>
+              </Link>
+              <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded">
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link to="/login" className="bg-blue-600 text-white px-4 py-2 rounded">Login</Link>
+          )}
         </div>
       </div>
     </nav>

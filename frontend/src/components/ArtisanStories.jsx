@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
 const artisans = [
-  { id: 1, name: "Lakshmi Devi", craft: "Silk Weaving", region: "Sualkuchi, Assam", image: "/images/lakshmi.jpg", story: "A third-generation weaver specializing in Assamese Muga silk for 25+ years." },
-  { id: 2, name: "Mohan Singh", craft: "Bamboo Craft", region: "Imphal, Manipur", image: "/images/mohan.jpg", story: "Mohan innovates bamboo crafting techniques to create contemporary decor items." },
-  { id: 3, name: "Temjen Ao", craft: "Wood Carving", region: "Mokokchung, Nagaland", image: "/images/temjen.jpg", story: "A master wood carver from the Ao tribe, creating ceremonial masks and tribal figurines." },
+  { id: 1, name: "Lakshmi Devi", craft: "Silk Weaving", region: "Sualkuchi, Assam", image: "https://th.bing.com/th/id/OIG2.yVWEAhdd9joj75JM3Ex8?pid=ImgGn", story: "A third-generation weaver specializing in Assamese Muga silk for 25+ years." },
+  { id: 2, name: "Mohan Singh", craft: "Bamboo Craft", region: "Imphal, Manipur", image: "https://th.bing.com/th/id/OIG1.03TLboXY0zrWeBJfbYG.?pid=ImgGn", story: "Mohan innovates bamboo crafting techniques to create contemporary decor items." },
+  { id: 3, name: "Temjen Ao", craft: "Wood Carving", region: "Mokokchung, Nagaland", image: "https://th.bing.com/th/id/OIG1.AOfq8gUD9FwrKze5RlWz?pid=ImgGn", story: "A master wood carver from the Ao tribe, creating ceremonial masks and tribal figurines." },
 ];
 
 function ArtisanStories() {
