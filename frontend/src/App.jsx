@@ -9,7 +9,7 @@ import Login from "./pages/Login"
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 //import CartPage from "./pages/CartPage";
-
+import "./i18n";
 function App() {
   return (
     <Router>

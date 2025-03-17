@@ -1,0 +1,29 @@
+{
+    "hero": {
+      "title": "Northeast India rwngwi sajakwma phuturi baithang nai",
+      "subtitle": "Khatharak kwthangma sikla rwngwi kwthang bwrwi, gwswkthang gwanthwi rwswkla",
+      "searchPlaceholder": "Kwthang, kholong rwngwi sikla bwthwngnai...",
+      "exploreButton": "Sikla Rwthok"
+    },
+    "categories": {
+      "title": "Kwthang Rwngwi Sikla",
+      "viewAll": "Kwthang Bwrwi Nai"
+    },
+    "featuredProducts": {
+      "title": "Bwthwngnai Kwthang",
+      "viewAll": "Bwrwi Nai"
+    },
+    "artisans": {
+      "title": "Kwthang Phairwngni Nai",
+      "discoverMore": "Phairwngni Bwrwi Sikla"
+    },
+    "regional": {
+      "title": "Northeast India rwngwi sikla"
+    },
+    "newsletter": {
+      "title": "Kwthangni Sikla",
+      "subtitle": "Bwthwngnai phairwng, kwthang rwngwi gwswkthang gwanthwi rwswkla",
+      "placeholder": "Nwngni Email Banta",
+      "subscribeButton": "Sikla Nai"
+    }
+}
