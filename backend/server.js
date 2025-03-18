@@ -15,7 +15,7 @@ const app = express();
 app.use(express.json()); // Middleware for JSON
 
 app.use(cors({
-  origin: ["http://localhost:5000","https://northeast-crafts.vercel.app"],
+  origin: ["https://northeast-crafts.vercel.app","http://localhost:5000"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 }));

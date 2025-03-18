@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { Link } from "react-router-dom";
 
 const Signup = () => {
@@ -9,10 +8,25 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5556";
+
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5556/api/signup", { name, email, password });
+      const res = await fetch(`${API_URL}/api/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Signup failed", errorData);
+        return;
+      }
+
       navigate("/login"); // Redirect to login after successful signup
     } catch (error) {
       console.error("Signup failed", error);

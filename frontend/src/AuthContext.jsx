@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5556";
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -12,30 +12,39 @@ export const AuthProvider = ({ children }) => {
     
     if (token && userData) {
       setUser(JSON.parse(userData));
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      // Optional: If using fetch later, you might not need global headers like axios
     }
   }, []);
 
   const login = async (email, password) => {
     try {
-      const res = await axios.post("http://localhost:5556/api/login", {
-        email,
-        password,
+      const res = await fetch(`${API_URL}/api/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
       });
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      axios.defaults.headers.common["Authorization"] = `Bearer ${res.data.token}`;
-      setUser(res.data.user);
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        return { success: false, message: errorData.message || "Login failed" };
+      }
+
+      const data = await res.json();
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setUser(data.user);
       return { success: true };
     } catch (error) {
-      return { success: false, message: error.response?.data?.message || "Login failed" };
+      console.error("Login error:", error);
+      return { success: false, message: "Login failed due to network error" };
     }
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    axios.defaults.headers.common["Authorization"] = "";
     setUser(null);
   };
 
