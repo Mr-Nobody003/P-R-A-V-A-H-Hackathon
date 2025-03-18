@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "./models/user.js";
 import Order from "./models/Order.js";
+import RegisterArtisan from "./models/registerArtisan.js";
 dotenv.config();
 
 const app = express();
@@ -364,8 +365,24 @@ app.post("/api/orders/create", authMiddleware, async (req, res) => {
       res.status(500).json({ error: "Internal Server Error" });
     }
   });
+  //register Artisan Api
+  app.post("/api/register-artisan", async (req, res) => {
+    const { username, password } = req.body;
   
+    try {
+      const existingUser = await RegisterArtisan.findOne({ username });
+      if (existingUser) {
+        return res.status(400).json({ message: "Username already taken" });
+      }
   
+      const newArtisan = new RegisterArtisan({ username, password });
+      await newArtisan.save();
+      res.status(201).json({ message: "Artisan registered successfully" });
+    } catch (error) {
+      console.error("Error registering artisan:", error);
+      res.status(500).json({ message: "Failed to register artisan" });
+    }
+  });
 
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);

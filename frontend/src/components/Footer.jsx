@@ -5,16 +5,29 @@ function Footer() {
   return (
     <footer className="bg-stone-100">
       <div className="container px-4 md:px-6 py-12 md:py-16">
+        {/* Register as an artisan text */}
+        <div className="text-center mb-6">
+          <Link
+            to="/admin/artisian_registration"
+            className="text-amber-600 font-semibold hover:underline"
+          >
+            Register as an artisan
+          </Link>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand & Social Links */}
           <div>
-            <Link to="/" className="flex items-center gap-2 font-semibold mb-4 hover:text-amber-600 transition-colors">
+            <Link
+              to="/"
+              className="flex items-center gap-2 font-semibold mb-4 hover:text-amber-600 transition-colors"
+            >
               <Package2 className="h-6 w-6" />
               <span>Northeast Crafts</span>
             </Link>
             <p className="text-sm text-gray-600 mb-4">
-              Preserving and promoting the rich cultural heritage of Northeast India through authentic handcrafted
-              products.
+              Preserving and promoting the rich cultural heritage of Northeast
+              India through authentic handcrafted products.
             </p>
             <div className="flex space-x-4">
               {[
@@ -46,7 +59,10 @@ function Footer() {
                 { to: "/categories/wood-carving", text: "Wood Carving" },
               ].map(({ to, text }, index) => (
                 <li key={index}>
-                  <Link to={to} className="text-gray-600 hover:text-amber-600 transition-colors">
+                  <Link
+                    to={to}
+                    className="text-gray-600 hover:text-amber-600 transition-colors"
+                  >
                     {text}
                   </Link>
                 </li>
@@ -66,7 +82,10 @@ function Footer() {
                 { to: "/contact", text: "Contact Us" },
               ].map(({ to, text }, index) => (
                 <li key={index}>
-                  <Link to={to} className="text-gray-600 hover:text-amber-600 transition-colors">
+                  <Link
+                    to={to}
+                    className="text-gray-600 hover:text-amber-600 transition-colors"
+                  >
                     {text}
                   </Link>
                 </li>
@@ -76,7 +95,9 @@ function Footer() {
 
           {/* Customer Service Section */}
           <div>
-            <h3 className="font-semibold mb-4 text-gray-800">Customer Service</h3>
+            <h3 className="font-semibold mb-4 text-gray-800">
+              Customer Service
+            </h3>
             <ul className="space-y-2 text-sm">
               {[
                 { to: "/shipping", text: "Shipping & Delivery" },
@@ -86,7 +107,10 @@ function Footer() {
                 { to: "/terms", text: "Terms & Conditions" },
               ].map(({ to, text }, index) => (
                 <li key={index}>
-                  <Link to={to} className="text-gray-600 hover:text-amber-600 transition-colors">
+                  <Link
+                    to={to}
+                    className="text-gray-600 hover:text-amber-600 transition-colors"
+                  >
                     {text}
                   </Link>
                 </li>
@@ -101,7 +125,8 @@ function Footer() {
         {/* Bottom Section */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-gray-600">
-            © {new Date().getFullYear()} Northeast Crafts. All rights reserved.
+            © {new Date().getFullYear()} Northeast Crafts. All rights
+            reserved.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 items-center">
             <p className="text-sm text-gray-600">Subscribe to our newsletter</p>
@@ -123,3 +148,5 @@ function Footer() {
 }
 
 export default Footer;
+
+

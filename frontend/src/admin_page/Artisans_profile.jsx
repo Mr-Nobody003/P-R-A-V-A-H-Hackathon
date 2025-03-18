@@ -1,112 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from "react";
 
-const ArtisanProfile = ({ artisanId }) => {
-  const [profile, setProfile] = useState(null);
-  const [newProductId, setNewProductId] = useState('');
-  const [loading, setLoading] = useState(true);
-
-  // Fetch Artisan Full Profile
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await axios.get(`http://localhost:5555/api/profile/${artisanId}`);
-        setProfile(res.data);
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProfile();
-  }, [artisanId]);
-  
-  // Add product to Artisan
-  const handleAddProduct = async () => {
-    try {
-      await axios.post(`http://localhost:5555/api/profile/${artisanId}/add-product`, {
-        productId: newProductId,
-      });
-      alert('Product added successfully!');
-      setNewProductId('');
-      // Re-fetch profile to update product list
-      const res = await axios.get(`http://localhost:5555/api/profile/${artisanId}`);
-      setProfile(res.data);
-    } catch (err) {
-      console.error('Error adding product:', err);
-      alert('Failed to add product');
-    }
-  };
-
-  if (loading) return <p>Loading profile...</p>;
-
-  if (!profile) return <p>Profile not found</p>;
-
-  const { artisan, personal } = profile;
-
+const ArtisansProfile = () => {
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold mb-4">{artisan.name}'s Profile</h2>
-
-      {/* Artisan Basic Info */}
-      <div className="bg-white shadow p-4 rounded mb-6">
-        <img src={artisan.image} alt={artisan.name} className="w-48 h-48 object-cover rounded mb-4" />
-        <p><strong>Craft:</strong> {artisan.craft}</p>
-        <p><strong>Location:</strong> {artisan.location}</p>
-        <p><strong>Description:</strong> {artisan.description}</p>
+    <div className="min-h-screen bg-gray-100">
+      {/* Banner Section */}
+      <div className="bg-amber-600 text-white text-center py-12 mb-8">
+        <h1 className="text-4xl font-bold mb-2">Hi, Artisan!</h1>
+        <p className="text-lg">Welcome to the onboarding page.</p>
       </div>
 
-      {/* Artisan Personal Info */}
-      <div className="bg-white shadow p-4 rounded mb-6">
-        <h3 className="text-xl font-semibold mb-3">Personal Details</h3>
-        <p><strong>Email:</strong> {personal.email}</p>
-        <p><strong>Phone:</strong> {personal.phone}</p>
-        <p><strong>Address:</strong> {personal.address}, {personal.city}, {personal.state} - {personal.pincode}</p>
-        <p><strong>Experience:</strong> {personal.experience}</p>
-        <p><strong>Bio:</strong> {personal.bio}</p>
-      </div>
+      {/* Main Content */}
+      <div className="container mx-auto px-4">
+        <div className="bg-white p-8 shadow-md rounded-md text-center">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Set up your page</h2>
+          <p className="text-gray-600 mb-6">List your products and manage them easily.</p>
 
-      {/* Bank Details */}
-      <div className="bg-white shadow p-4 rounded mb-6">
-        <h3 className="text-xl font-semibold mb-3">Bank Details</h3>
-        <p><strong>Account Name:</strong> {personal.bankDetails.accountName}</p>
-        <p><strong>Account Number:</strong> {personal.bankDetails.accountNumber}</p>
-        <p><strong>Bank:</strong> {personal.bankDetails.bankName} ({personal.bankDetails.branch})</p>
-        <p><strong>IFSC:</strong> {personal.bankDetails.ifscCode}</p>
-        <p><strong>UPI ID:</strong> {personal.bankDetails.upiId}</p>
-      </div>
-
-      {/* Products */}
-      <div className="bg-white shadow p-4 rounded mb-6">
-        <h3 className="text-xl font-semibold mb-3">Products</h3>
-        {artisan.products.length > 0 ? (
-          artisan.products.map((product) => (
-            <p key={product._id}>Product ID: {product._id}</p> // Replace with product.name if populated
-          ))
-        ) : (
-          <p>No products added yet.</p>
-        )}
-      </div>
-
-      {/* Add Product */}
-      <div className="bg-white shadow p-4 rounded mb-6">
-        <h3 className="text-xl font-semibold mb-3">Add Product</h3>
-        <input
-          type="text"
-          placeholder="Enter Product ID"
-          value={newProductId}
-          onChange={(e) => setNewProductId(e.target.value)}
-          className="border p-2 mr-4 rounded"
-        />
-        <button
-          onClick={handleAddProduct}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          Add Product
-        </button>
+          {/* Instructions */}
+          <div className="text-left space-y-4">
+            <p className="text-gray-700">
+              ✅ <strong>Set up your page:</strong> Customize your profile with details and images.
+            </p>
+            <p className="text-gray-700">
+              ✅ <strong>List your products:</strong> Add and showcase your craft items.
+            </p>
+            <p className="text-gray-700">
+              ✅ <strong>Sell and manage:</strong> Track your orders and manage sales effortlessly.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ArtisanProfile;
+export default ArtisansProfile;
