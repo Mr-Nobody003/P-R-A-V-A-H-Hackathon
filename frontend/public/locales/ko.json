@@ -1,29 +1,54 @@
 {
-    "hero": {
-      "title": "Northeast India rwngwi sajakwma phuturi baithang nai",
-      "subtitle": "Khatharak kwthangma sikla rwngwi kwthang bwrwi, gwswkthang gwanthwi rwswkla",
-      "searchPlaceholder": "Kwthang, kholong rwngwi sikla bwthwngnai...",
-      "exploreButton": "Sikla Rwthok"
-    },
-    "categories": {
-      "title": "Kwthang Rwngwi Sikla",
-      "viewAll": "Kwthang Bwrwi Nai"
-    },
-    "featuredProducts": {
-      "title": "Bwthwngnai Kwthang",
-      "viewAll": "Bwrwi Nai"
-    },
-    "artisans": {
-      "title": "Kwthang Phairwngni Nai",
-      "discoverMore": "Phairwngni Bwrwi Sikla"
-    },
-    "regional": {
-      "title": "Northeast India rwngwi sikla"
-    },
-    "newsletter": {
-      "title": "Kwthangni Sikla",
-      "subtitle": "Bwthwngnai phairwng, kwthang rwngwi gwswkthang gwanthwi rwswkla",
-      "placeholder": "Nwngni Email Banta",
-      "subscribeButton": "Sikla Nai"
+  "nav": {
+    "brand": "Northeast Borok Handicrafts",
+    "home": "Home",
+    "about": "Bwrwi",
+    "products": "Swkalphai",
+    "artisans": "Artisans",
+    "regions": "Bwlai",
+    "login": "Login",
+    "cart": "Cart",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "hero": {
+    "title": "Northeast India bwlai Handicrafts ba okrao",
+    "subtitle": "Kothoma artisan bwkha handi ang swkalphai ba macha",
+    "searchPlaceholder": "Handicraft, bwlai or artisan ba okrao...",
+    "exploreButton": "Ba Okrao"
+  },
+  "categories": {
+    "title": "Handicraft phaisa ba okrao",
+    "viewAll": "Song mani phaisa ba okrao"
+  },
+  "featuredProducts": {
+    "title": "Kwrwi Swkalphai",
+    "viewAll": "Song mani ba okrao"
+  },
+  "artisans": {
+    "title": "Artisan bwkha hamthai",
+    "discoverMore": "Doham artisan ba okrao"
+  },
+  "regional": {
+    "title": "Northeast India bwlai ba okrao"
+  },
+  "newsletter": {
+    "title": "Khamchani",
+    "subtitle": "Rwi artisan, swkalphai o borok mwthai bwkha news hamthai",
+    "placeholder": "Nwng email address",
+    "subscribeButton": "Subscribe"
+  },
+  "regionPage": {
+    "loading": "Bwlai data load bwkha...",
+    "backToHome": "Home bwlai hamthai",
+    "artisansTitle": "Bwlai bwkha artisan",
+    "noArtisans": "Bwlai bwkha artisan ha mana.",
+    "productsTitle": "Bwlai bwkha swkalphai",
+    "noProducts": "Bwlai bwkha swkalphai ha mana.",
+    "regionHeading": "{{regionName}}",
+    "artisan": {
+      "craft": "Handicraft",
+      "description": "Dopani"
     }
+  }
 }

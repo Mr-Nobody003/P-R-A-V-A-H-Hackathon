@@ -18,6 +18,8 @@ const Navbar = () => {
   const changeLanguage = (lang) => {
     i18n.changeLanguage(lang);
   };
+  
+  const { t } = useTranslation();
 
   // Close the dropdown when clicking outside
   useEffect(() => {
@@ -40,7 +42,7 @@ const Navbar = () => {
             alt="Logo"
             className="h-10 w-10 mr-2"
           />
-          Northeast Crafts
+          {t("nav.brand")}
         </Link>
 
         {/* Hamburger for Mobile */}
@@ -57,19 +59,19 @@ const Navbar = () => {
 
         {/* Dropdown menu */}
         <div className={`absolute right-0 top-12 bg-white shadow-lg p-4 mt-2 rounded w-64 z-50 ${isOpen ? 'block' : 'hidden'}`}>
-          <Link to="/" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Home</Link>
-          <Link to="/products" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Products</Link>
-          <Link to="/artisans" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Artisans</Link>
-          <Link to="/home/region" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Region</Link>
-          <Link to="/about" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">About</Link>
-          <Link to="/cart" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Cart</Link>
+          <Link to="/" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">{t("nav.home")}</Link>
+          <Link to="/products" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">{t("nav.products")}</Link>
+          <Link to="/artisans" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">{t("nav.artisans")}</Link>
+          <Link to="/home/region" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">{t("nav.regions")}</Link>
+          <Link to="/about" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">{t("nav.about")}</Link>
+          <Link to="/profile" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">{t("nav.cart")}</Link>
           {user ? (
             <>
-              <Link to="/profile" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Profile</Link>
-              <button onClick={() => { handleLogout(); setIsOpen(false); }} className="block py-2 text-red-500">Logout</button>
+              <Link to="/profile" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">{t("nav.profile")}</Link>
+              <button onClick={() => { handleLogout(); setIsOpen(false); }} className="block py-2 text-red-500">{t("nav.logout")}</button>
             </>
           ) : (
-            <Link to="/login" onClick={() => setIsOpen(false)} className="block py-2 text-blue-600">Login</Link>
+            <Link to="/login" onClick={() => setIsOpen(false)} className="block py-2 text-blue-600">{t("nav.login")}</Link>
           )}
         </div>
       </div>
@@ -77,14 +79,14 @@ const Navbar = () => {
 
         {/* Navigation Links for Desktop */}
         <div className="hidden md:flex md:flex-row md:items-center md:space-x-6">
-          <Link to="/" className="hover:text-blue-600">Home</Link>
-          <Link to="/products" className="hover:text-blue-600">Products</Link>
-          <Link to="/artisans" className="hover:text-blue-600">Artisans</Link>
-          <Link to="/region" className="hover:text-blue-600">Region</Link>
-          <Link to="/about" className="hover:text-blue-600">About</Link>
+          <Link to="/" className="hover:text-blue-600">{t("nav.home")}</Link>
+          <Link to="/products" className="hover:text-blue-600">{t("nav.products")}</Link>
+          <Link to="/artisans" className="hover:text-blue-600">{t("nav.artisans")}</Link>
+          <Link to="/region" className="hover:text-blue-600">{t("nav.regions")}</Link>
+          <Link to="/about" className="hover:text-blue-600">{t("nav.about")}</Link>
 
           {/* Cart Icon */}
-          <Link to="/cart" className="hover:text-blue-600 flex items-center">
+          <Link to="/profile" className="hover:text-blue-600 flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
               <path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z" />
             </svg>
@@ -98,20 +100,20 @@ const Navbar = () => {
           >
             <option value="en">English</option>
             <option value="hi">हिंदी</option>
-            <option value="as">অসমীয়া</option>
             <option value="ko">Kokborok</option>
             <option value="bn">বাংলা</option>
             <option value="te">తెలుగు</option>
+            <option value="as">অসমীয়া</option>
           </select>
 
           {/* Authentication */}
           {user ? (
             <div className="flex items-center space-x-4">
-              <Link to="/profile" className="hover:text-blue-600">Profile</Link>
-              <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded">Logout</button>
+              <Link to="/profile" className="hover:text-blue-600">{t("nav.profile")}</Link>
+              <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded">{t("nav.logout")}</button>
             </div>
           ) : (
-            <Link to="/login" className="bg-blue-600 text-white px-4 py-2 rounded">Login</Link>
+            <Link to="/login" className="bg-blue-600 text-white px-4 py-2 rounded">{t("nav.login")}</Link>
           )}
         </div>
       </div>

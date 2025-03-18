@@ -1,30 +1,54 @@
 {
-    "hero": {
-      "title": "Discover the Artisanal Treasures of Northeast India",
-      "subtitle": "Authentic handcrafted products directly from skilled artisans, preserving centuries of tradition",
-      "searchPlaceholder": "Search for crafts, regions, or artisans...",
-      "exploreButton": "Explore Now"
-    },
-    "categories": {
-      "title": "Explore Craft Categories",
-      "viewAll": "View All Categories"
-    },
-    "featuredProducts": {
-      "title": "Featured Products",
-      "viewAll": "View All"
-    },
-    "artisans": {
-      "title": "Meet Our Artisans",
-      "discoverMore": "Discover More Artisans"
-    },
-    "regional": {
-      "title": "Explore Northeast India"
-    },
-    "newsletter": {
-      "title": "Stay Connected",
-      "subtitle": "Subscribe to receive updates on new artisans, products, and cultural stories",
-      "placeholder": "Your email address",
-      "subscribeButton": "Subscribe"
+  "nav":{
+    "brand": "Northeast Crafts",
+    "home": "Home",
+    "about": "About",
+    "products": "Products",
+    "artisans": "Artisans",
+    "regions": "Regions",
+    "login": "Login",
+    "cart": "Cart",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "hero": {
+    "title": "Discover the Artisanal Treasures of Northeast India",
+    "subtitle": "Authentic handcrafted products directly from skilled artisans, preserving centuries of tradition",
+    "searchPlaceholder": "Search for crafts, regions, or artisans...",
+    "exploreButton": "Explore Now"
+  },
+  "categories": {
+    "title": "Explore Craft Categories",
+    "viewAll": "View All Categories"
+  },
+  "featuredProducts": {
+    "title": "Featured Products",
+    "viewAll": "View All"
+  },
+  "artisans": {
+    "title": "Meet Our Artisans",
+    "discoverMore": "Discover More Artisans"
+  },
+  "regional": {
+    "title": "Explore Northeast India"
+  },
+  "newsletter": {
+    "title": "Stay Connected",
+    "subtitle": "Subscribe to receive updates on new artisans, products, and cultural stories",
+    "placeholder": "Your email address",
+    "subscribeButton": "Subscribe"
+  },
+  "regionPage": {
+    "loading": "Loading region data...",
+    "backToHome": "Back to Home",
+    "artisansTitle": "Artisans from this Region",
+    "noArtisans": "No artisans found for this region.",
+    "productsTitle": "Products from this Region",
+    "noProducts": "No products available for this region.",
+    "regionHeading": "{{regionName}}",
+    "artisan": {
+      "craft": "Craft",
+      "description": "Description"
     }
   }
-  
+}

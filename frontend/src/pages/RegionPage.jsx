@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FiArrowLeft } from "react-icons/fi";
 import ProductCard from "../components/ProductCard";
+import { useTranslation } from "react-i18next"; 
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5556";
 
@@ -25,7 +26,7 @@ const RegionPage = () => {
   const [loading, setLoading] = useState(true);
 
   const backgroundImage = regionImages[regionid] || "";
-
+  const { t } = useTranslation();
   useEffect(() => {
     const fetchRegionData = async () => {
       try {
@@ -33,10 +34,10 @@ const RegionPage = () => {
           axios.get(`${API_URL}/api/artisans`),
           axios.get(`${API_URL}/api/products`),
         ]);
-
+        console.log("Artisans data:", artisanRes.data);
         // Filter artisans based on their location (region)
-        const filteredArtisans = artisanRes.data.filter(
-          (artisan) => artisan.location.toLowerCase() === regionid
+        const filteredArtisans = artisanRes.data.filter((artisan) =>
+          artisan.location.toLowerCase().includes(regionid)
         );
 
         // Filter products based on region
@@ -57,9 +58,9 @@ const RegionPage = () => {
   }, [regionid]);
 
   if (loading) {
-    return <p className="text-center text-gray-600">Loading region data...</p>;
+    return <p className="text-center text-gray-600">{t("regionPage.loading")}</p>;
   }
-
+  
   return (
     <div
       className="min-h-screen bg-cover bg-center p-8"
@@ -70,7 +71,7 @@ const RegionPage = () => {
         className="flex items-center gap-2 text-white bg-black/50 px-4 py-2 rounded-lg hover:bg-black/70"
         onClick={() => navigate("/")}
       >
-        <FiArrowLeft /> Back to Home
+        <FiArrowLeft /> {t("regionPage.backToHome")}
       </button>
 
       {/* Region Info */}
@@ -78,7 +79,7 @@ const RegionPage = () => {
 
       {/* Artisans */}
       <div className="bg-white/80 p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold mb-4">Artisans from this Region</h2>
+        <h2 className="text-2xl font-semibold mb-4">{t("regionPage.artisansTitle")}</h2>
         {artisans.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {artisans.map((artisan) => (
@@ -86,7 +87,7 @@ const RegionPage = () => {
                 <img
                   src={artisan.image}
                   alt={artisan.name}
-                  className="w-full h-48 object-cover rounded-lg mb-4"
+                  className="w-full h-48 object-contain rounded-lg mb-4"
                 />
                 <h3 className="text-xl font-bold">{artisan.name}</h3>
                 <p className="text-gray-600">{artisan.craft}</p>
@@ -95,13 +96,13 @@ const RegionPage = () => {
             ))}
           </div>
         ) : (
-          <p className="text-gray-600">No artisans found for this region.</p>
+          <p className="text-gray-600">{t("regionPage.noArtisans")}</p>
         )}
       </div>
 
       {/* Products */}
       <div className="bg-white/80 p-6 rounded-lg shadow-lg mt-8">
-        <h2 className="text-2xl font-semibold mb-4">Products from this Region</h2>
+        <h2 className="text-2xl font-semibold mb-4">{t("regionPage.productsTitle")}</h2>
         {products.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {products.map((product) => (
@@ -109,7 +110,7 @@ const RegionPage = () => {
             ))}
           </div>
         ) : (
-          <p className="text-gray-600">No products available for this region.</p>
+          <p className="text-gray-600">{t("regionPage.noProducts")}</p>
         )}
       </div>
     </div>
