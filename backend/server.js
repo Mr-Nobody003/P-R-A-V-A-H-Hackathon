@@ -7,6 +7,7 @@ import Artisan from "./models/Artisian.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import User from "./models/user.js";
+import Order from "./models/Order.js";
 dotenv.config();
 
 const app = express();
@@ -306,6 +307,65 @@ app.get("/api/products/category/:category", async (req, res) => {
   });
 
 
+  
+ 
+  
+// API to place an order
+// API to place an order using token
+app.post("/api/orders/create", authMiddleware, async (req, res) => {
+    try {
+      const { products, address } = req.body;
+      const userId = req.userId; // Extracted from token
+  
+      // Fetch product details to calculate total price
+      const productIds = products.map((product) => product.productId);
+      const foundProducts = await Product.find({ _id: { $in: productIds } });
+  
+      if (foundProducts.length !== productIds.length) {
+        return res.status(400).json({ error: "Some products not found" });
+      }
+  
+      // Calculate total price
+      const totalAmount = foundProducts.reduce((sum, product) => sum + product.price, 0);
+  
+      // Create new order
+      const newOrder = new Order({
+        userId,
+        products: productIds, // Only storing product IDs
+        totalAmount,
+        address,
+      });
+  
+      await newOrder.save();
+  
+      // ✅ Add order ID to user's orders array
+      await User.findByIdAndUpdate(
+        userId,
+        { $push: { orders: newOrder._id } },
+        { new: true }
+      );
+  
+      // Prepare invoice response
+      const invoice = {
+        orderId: newOrder._id,
+        userId: newOrder.userId,
+        products: foundProducts.map((product) => ({
+          name: product.name,
+          price: product.price,
+        })),
+        totalAmount: newOrder.totalAmount,
+        address: newOrder.address,
+        createdAt: newOrder.createdAt,
+      };
+  
+      res.status(201).json(invoice);
+    } catch (error) {
+      console.error("Error creating order:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+  
+  
 
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);

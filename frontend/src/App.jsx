@@ -10,7 +10,8 @@ import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import CategoriesPage from "./pages/CategoriesPage"
 import RegionPage from './pages/RegionPage';
-import ArtisanPage from "./pages/ArtisanPage"
+import ArtisanPage from "./pages/ArtisanPage";
+import Checkout from "./pages/Checkout";
 //import CartPage from "./pages/CartPage";
 import "./i18n";
 function App() {
@@ -18,6 +19,7 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
+        <Route path="/checkout" element={< Checkout/>} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/artisans/:artisanid" element={<ArtisanPage />} />
         <Route path="/signup" element={<Signup />} />
