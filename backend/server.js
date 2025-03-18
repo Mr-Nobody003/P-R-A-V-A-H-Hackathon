@@ -55,9 +55,9 @@ app.get("/api/products", async (req, res) => {
   // Add a new product (MongoDB auto-generates `_id`)
   app.post("/api/products", async (req, res) => {
     try {
-      const { name, category, price, image, description, artisanId } = req.body;
+      const { name, category, price, image, description, region, likes, comments, artisanId } = req.body;
   
-      if (!name || !category || !price || !image || !artisanId) {
+      if (!name || !category || !price || !image || !region || !artisanId) {
         return res.status(400).json({ message: "All fields are required" });
       }
   
@@ -72,7 +72,10 @@ app.get("/api/products", async (req, res) => {
         price,
         image,
         description,
-        artisan: artisanId, // Associate product with artisan
+        region,
+        likes,
+        comments,
+        artisanId, // Associate product with artisan
       });
   
       const savedProduct = await newProduct.save();
@@ -83,9 +86,11 @@ app.get("/api/products", async (req, res) => {
   
       res.status(201).json(savedProduct);
     } catch (err) {
+      console.error(err);
       res.status(500).json({ message: "Error saving product" });
     }
   });
+  
   
   
   // Get all artisans

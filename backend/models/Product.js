@@ -9,7 +9,7 @@ const ProductSchema = new mongoose.Schema({
   region: { type: String, required: true },
   likes: { type: Number, default: 0 },
   comments: { type: Number, default: 0 },
-  artisan: { type: mongoose.Schema.Types.ObjectId, ref: "Artisan" } // Relation to Artisan
+  artisanId: { type: mongoose.Schema.Types.ObjectId, ref: "Artisan" } // Relation to Artisan
 });
 
 const Product = mongoose.model("Product", ProductSchema);

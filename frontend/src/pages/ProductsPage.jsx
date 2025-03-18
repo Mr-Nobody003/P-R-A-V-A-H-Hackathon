@@ -14,7 +14,7 @@ const ProductsPage = () => {
     category: "",
     region: "",
     artist: "",
-    priceRange: [0, 500], // Min-Max Price
+    priceRange: [0, 100000], // Min-Max Price
   });
 
   const navigate = useNavigate();
@@ -26,6 +26,7 @@ const ProductsPage = () => {
         const response = await fetch(`${API_URL}/api/products`);
         if (!response.ok) throw new Error("Failed to fetch products");
         const data = await response.json();
+        console.log(data); // 🔥 Check how many products you receive
         setProducts(data);
       } catch (err) {
         setError(err.message);
