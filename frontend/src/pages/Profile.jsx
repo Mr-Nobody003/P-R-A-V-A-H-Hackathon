@@ -1,12 +1,14 @@
 import { useAuth } from "../AuthContext";
 import { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const { user } = useAuth();
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5556";
   const token = localStorage.getItem("token");
@@ -49,6 +51,8 @@ const Profile = () => {
     return <p className="text-center text-red-500">{error}</p>;
   }
 
+  const totalSum = cartItems.reduce((sum, product) => sum + product.price, 0);
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="p-6 bg-white shadow-md rounded-lg">
@@ -73,9 +77,57 @@ const Profile = () => {
           </div>
         )}
       </div>
+
+      {cartItems.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-xl font-bold mb-4">Cart Summary</h3>
+          <table className="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-300 px-4 py-2 text-left">
+                  Product Name
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-right">
+                  Price (₹)
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {cartItems.map((product) => (
+                <tr key={product._id}>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {product.name}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-right">
+                    ₹{product.price.toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+              <tr className="font-bold bg-gray-50">
+                <td className="border border-gray-300 px-4 py-2">Total</td>
+                <td className="border border-gray-300 px-4 py-2 text-right">
+                  ₹{totalSum.toFixed(2)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div className="mt-6 text-right">
+            <button
+              onClick={() => navigate("/checkout")}
+              className="bg-green-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-600 transition duration-300"
+            >
+              Proceed to Checkout
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default Profile;
+
+
+
 
