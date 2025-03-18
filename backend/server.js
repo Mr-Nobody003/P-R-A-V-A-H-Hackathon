@@ -289,6 +289,24 @@ app.get("/api/cart", authMiddleware, async (req, res) => {
 
 
 
+// 📌 Get products by category
+app.get("/api/products/category/:category", async (req, res) => {
+    const { category } = req.params;
+  
+    try {
+      const products = await Product.find({ category });
+      if (products.length === 0) {
+        return res.status(404).json({ message: "No products found for this category." });
+      }
+      res.json(products);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error fetching products by category" });
+    }
+  });
+
+
+
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
   });
