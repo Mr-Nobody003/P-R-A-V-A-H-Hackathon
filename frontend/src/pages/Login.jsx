@@ -9,16 +9,19 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5556";
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5556/api/login", { email, password });
+      const res = await axios.post(`${API_URL}/api/login`, { email, password });
       await login(email, password);
       navigate("/");
     } catch (error) {
       console.error("Login failed", error);
     }
   };
+
 
   return (
     <div className="flex items-center justify-center h-screen bg-gradient-to-r from-green-300 to-blue-400">
