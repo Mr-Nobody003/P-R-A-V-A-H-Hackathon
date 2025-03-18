@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FiHeart, FiMessageSquare } from "react-icons/fi";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -14,28 +14,47 @@ const ProductsPage = () => {
     category: "",
     region: "",
     artist: "",
-    priceRange: [0, 100000], // Min-Max Price
+    priceRange: [0, 100000],
   });
 
   const navigate = useNavigate();
+  const location = useLocation();
   const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5556";
+
+  const getCategoryFromUrl = () => {
+    const params = new URLSearchParams(location.search);
+    return params.get("category") || "";
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       try {
-        const response = await fetch(`${API_URL}/api/products`);
+        const category = getCategoryFromUrl();
+        let response;
+
+        // If category selected, call new API
+        if (category) {
+          response = await fetch(`${API_URL}/api/products/category/${category}`);
+        } else {
+          // If no category, fetch all products
+          response = await fetch(`${API_URL}/api/products`);
+        }
+
         if (!response.ok) throw new Error("Failed to fetch products");
         const data = await response.json();
-        console.log(data); // 🔥 Check how many products you receive
         setProducts(data);
+        // Auto-select category if passed via URL
+        setFilters((prev) => ({ ...prev, category }));
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
+
     fetchProducts();
-  }, []);
+  }, [location.search]);
 
   // 📌 Toggle Wishlist
   const toggleWishlist = (id) => {
@@ -61,6 +80,16 @@ const ProductsPage = () => {
       return 0;
     });
 
+  // 📌 Handle Category Filter Change
+  const handleCategoryChange = (e) => {
+    const selectedCategory = e.target.value;
+    if (selectedCategory) {
+      navigate(`/products?category=${selectedCategory}`);
+    } else {
+      navigate(`/products`);
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-800 text-center mb-6">
@@ -68,7 +97,9 @@ const ProductsPage = () => {
       </h1>
 
       {/* Loading & Error Handling */}
-      {loading && <p className="text-center text-gray-600">Loading products...</p>}
+      {loading && (
+        <p className="text-center text-gray-600">Loading products...</p>
+      )}
       {error && <p className="text-center text-red-500">{error}</p>}
 
       {/* Sorting & Filtering Options */}
@@ -84,9 +115,14 @@ const ProductsPage = () => {
             max={100000}
             step={10}
             value={filters.priceRange}
-            onChange={(value) => setFilters({ ...filters, priceRange: value })}
+            onChange={(value) =>
+              setFilters({ ...filters, priceRange: value })
+            }
             trackStyle={[{ backgroundColor: "#4CAF50" }]}
-            handleStyle={[{ borderColor: "#4CAF50" }, { borderColor: "#4CAF50" }]}
+            handleStyle={[
+              { borderColor: "#4CAF50" },
+              { borderColor: "#4CAF50" },
+            ]}
           />
         </div>
 
@@ -100,10 +136,11 @@ const ProductsPage = () => {
           <option value="priceHighLow">Price: High to Low</option>
         </select>
 
-        {/* Category Filter */}
+        {/* Category Filter (Restored!) */}
         <select
           name="category"
-          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+          value={filters.category}
+          onChange={handleCategoryChange}
           className="border border-gray-300 rounded-lg px-4 py-2"
         >
           <option value="">All Categories</option>
@@ -149,7 +186,9 @@ const ProductsPage = () => {
                 <h2 className="text-lg font-semibold text-gray-900">
                   {product.name}
                 </h2>
-                <p className="text-sm text-gray-600">₹{product.price.toFixed(2)}</p>
+                <p className="text-sm text-gray-600">
+                  ₹{product.price.toFixed(2)}
+                </p>
 
                 {/* Likes & Comments Count */}
                 <div className="flex justify-center gap-4 text-gray-600 text-sm mt-2">
@@ -157,7 +196,13 @@ const ProductsPage = () => {
                     className="flex items-center gap-1 cursor-pointer"
                     onClick={() => toggleWishlist(product._id)}
                   >
-                    <FiHeart className={wishlist.includes(product._id) ? "text-red-500" : "text-gray-400"} />
+                    <FiHeart
+                      className={
+                        wishlist.includes(product._id)
+                          ? "text-red-500"
+                          : "text-gray-400"
+                      }
+                    />
                     {product.likes} Likes
                   </span>
                   <span className="flex items-center gap-1">
@@ -169,7 +214,9 @@ const ProductsPage = () => {
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500 col-span-full">No products found.</p>
+          <p className="text-center text-gray-500 col-span-full">
+            No products found.
+          </p>
         )}
       </div>
     </div>
@@ -177,3 +224,6 @@ const ProductsPage = () => {
 };
 
 export default ProductsPage;
+
+
+
