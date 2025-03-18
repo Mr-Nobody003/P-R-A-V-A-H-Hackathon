@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,16 +20,16 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <form onSubmit={handleSignup} className="p-6 bg-white shadow-md rounded-lg">
-        <h2 className="text-xl font-bold mb-4">Sign Up</h2>
+    <div className="flex items-center justify-center h-screen bg-gradient-to-r from-green-300 to-blue-400">
+      <form onSubmit={handleSignup} className="p-8 bg-white shadow-lg rounded-lg w-96 border-2 border-green-600">
+        <h2 className="text-2xl font-bold text-center text-green-800 mb-6">Create Your Account</h2>
         
         <input
           type="text"
           placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="border p-2 mb-3 w-full"
+          className="border p-3 mb-4 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           required
         />
         <input
@@ -38,7 +37,7 @@ const Signup = () => {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="border p-2 mb-3 w-full"
+          className="border p-3 mb-4 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           required
         />
         <input
@@ -46,13 +45,13 @@ const Signup = () => {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 mb-3 w-full"
+          className="border p-3 mb-4 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           required
         />
-        <button type="submit" className="bg-green-500 text-white p-2 w-full">Sign Up</button>
+        <button type="submit" className="bg-green-700 hover:bg-green-800 text-white p-3 w-full rounded-md">Sign Up</button>
         
-        <p className="mt-3 text-center">
-          Already have an account? <Link to="/login" className="text-blue-600">Login</Link>
+        <p className="mt-4 text-center text-gray-700">
+          Already have an account? <Link to="/login" className="text-green-700 font-bold">Login</Link>
         </p>
       </form>
     </div>

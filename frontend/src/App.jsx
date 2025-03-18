@@ -8,6 +8,7 @@ import Artisan from "./pages/Artisans";
 import Login from "./pages/Login"
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
+import ArtisanPage from "./pages/ArtisanPage"
 //import CartPage from "./pages/CartPage";
 import "./i18n";
 function App() {
@@ -16,7 +17,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/profile" element={<Profile />} />
-
+        <Route path="/artisans/:artisanid" element={<ArtisanPage />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
