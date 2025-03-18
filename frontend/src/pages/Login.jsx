@@ -13,7 +13,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await axios.post("http://localhost:5556/api/login", { email, password });
-      await login(email, password); // Use the existing login function from AuthContext
+      await login(email, password);
       navigate("/");
     } catch (error) {
       console.error("Login failed", error);
@@ -21,15 +21,15 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <form onSubmit={handleLogin} className="p-6 bg-white shadow-md rounded-lg">
-        <h2 className="text-xl font-bold mb-4">Login</h2>
+    <div className="flex items-center justify-center h-screen bg-gradient-to-r from-green-300 to-blue-400">
+      <form onSubmit={handleLogin} className="p-8 bg-white shadow-lg rounded-lg w-96 border-2 border-green-600">
+        <h2 className="text-2xl font-bold text-center text-green-800 mb-6">Welcome to Northeast Crafts</h2>
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="border p-2 mb-3 w-full"
+          className="border p-3 mb-4 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           required
         />
         <input
@@ -37,13 +37,13 @@ const Login = () => {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 mb-3 w-full"
+          className="border p-3 mb-4 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           required
         />
-        <button type="submit" className="bg-blue-500 text-white p-2 w-full">Login</button>
+        <button type="submit" className="bg-green-700 hover:bg-green-800 text-white p-3 w-full rounded-md">Login</button>
         
-        <p className="mt-3 text-center">
-          If you don't have an account, <Link to="/signup" className="text-blue-600">Sign Up</Link>
+        <p className="mt-4 text-center text-gray-700">
+          Don't have an account? <Link to="/signup" className="text-green-700 font-bold">Sign Up</Link>
         </p>
       </form>
     </div>
