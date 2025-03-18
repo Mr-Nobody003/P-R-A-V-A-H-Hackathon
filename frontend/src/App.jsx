@@ -14,6 +14,10 @@ import ArtisanPage from "./pages/ArtisanPage";
 import Checkout from "./pages/Checkout";
 import Payment from "./pages/Payment";
 //import CartPage from "./pages/CartPage";
+
+import ArtisanRegistration from "./admin_page/RegisterArtisian";
+import Artisans_profile from "./admin_page/Artisans_profile";
+
 import "./i18n";
 function App() {
   return (
@@ -35,6 +39,9 @@ function App() {
         <Route path="/products/:id" element={<ProductPage />} />
         <Route path="/regions/:regionid" element={<RegionPage />} />
         {/* <Route path="/cart" element={<CartPage />} /> */}
+        <Route path="/admin/artisian_registration" element={<ArtisanRegistration />} />
+        <Route path="/admin/artisans_profile" element={<Artisans_profile />} />
+         
       </Routes>
       <Footer />
     </Router>

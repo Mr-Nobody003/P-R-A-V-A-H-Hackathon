@@ -9,7 +9,7 @@ i18n
   .use(LanguageDetector) // Detects user language
   .use(initReactI18next) // Initializes with React
   .init({
-    supportedLngs: ["en", "ko", "hi", "bn","as"], // Add more languages
+    supportedLngs: ["en", "ko", "hi", "bn","as","te"], // Add more languages
     fallbackLng: "en", // Default language
     detection: {
       order: ["localStorage", "cookie", "navigator"], // Language detection order

@@ -60,7 +60,7 @@ const Navbar = () => {
           <Link to="/" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Home</Link>
           <Link to="/products" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Products</Link>
           <Link to="/artisans" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Artisans</Link>
-          <Link to="/region" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Region</Link>
+          <Link to="/home/region" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Region</Link>
           <Link to="/about" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">About</Link>
           <Link to="/cart" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Cart</Link>
           {user ? (
@@ -101,6 +101,7 @@ const Navbar = () => {
             <option value="as">অসমীয়া</option>
             <option value="ko">Kokborok</option>
             <option value="bn">বাংলা</option>
+            <option value="te">తెలుగు</option>
           </select>
 
           {/* Authentication */}
