@@ -7,7 +7,7 @@ const productInfoSchema = new mongoose.Schema({
     ref: "Product", 
     required: true 
   },
-  description: { 
+  info: { 
     type: String, 
     required: true 
   },
