@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Artisan = () => {
   const [artisans, setArtisans] = useState([]);
@@ -7,15 +8,14 @@ const Artisan = () => {
   const [error, setError] = useState("");
 
   const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5556";
+
   useEffect(() => {
     const fetchArtisans = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/artisans`); // Update with your actual API URL
-        if (!response.ok) throw new Error("Failed to fetch artisans");
-        const data = await response.json();
-        setArtisans(data);
+        const response = await axios.get(`${API_URL}/api/artisans`);
+        setArtisans(response.data);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "Failed to fetch artisans");
       } finally {
         setLoading(false);
       }
@@ -41,7 +41,7 @@ const Artisan = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {artisans.map((artisan) => (
             <div
-              key={artisan._id} // Use `_id` from MongoDB
+              key={artisan._id}
               className="bg-white rounded-lg shadow-lg overflow-hidden"
             >
               <div className="w-full h-64 bg-gray-200 flex items-center justify-center">

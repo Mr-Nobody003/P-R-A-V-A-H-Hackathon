@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import ProductCard from "../components/ProductCard";
+import axios from "axios";
 
 const ArtisanPage = () => {
   const { artisanid } = useParams();
@@ -15,12 +16,10 @@ const ArtisanPage = () => {
   useEffect(() => {
     const fetchArtisan = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/artisans/${artisanid}`);
-        if (!response.ok) throw new Error("Artisan not found");
-        const data = await response.json();
-        setArtisan(data);
+        const response = await axios.get(`${API_URL}/api/artisans/${artisanid}`);
+        setArtisan(response.data);
       } catch (err) {
-        setError(err.message);
+        setError(err.response?.data?.message || "Artisan not found");
       } finally {
         setLoading(false);
       }
