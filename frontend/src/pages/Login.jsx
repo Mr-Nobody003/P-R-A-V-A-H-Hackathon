@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../AuthContext";
-import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,14 +13,27 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${API_URL}/api/login`, { email, password });
-      await login(email, password);
+      const res = await fetch(`${API_URL}/api/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Login failed");
+      }
+
+      // Optional: If backend sends token or data, you can parse it
+      // const data = await res.json();
+
+      await login(email, password); // your context login logic
       navigate("/");
     } catch (error) {
       console.error("Login failed", error);
     }
   };
-
 
   return (
     <div className="flex items-center justify-center h-screen bg-gradient-to-r from-green-300 to-blue-400">
@@ -54,4 +66,3 @@ const Login = () => {
 };
 
 export default Login;
-
