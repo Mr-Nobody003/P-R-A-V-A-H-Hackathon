@@ -9,7 +9,7 @@ import Login from "./pages/Login"
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import CategoriesPage from "./pages/CategoriesPage"
-
+import RegionPage from './pages/RegionPage';
 import ArtisanPage from "./pages/ArtisanPage"
 //import CartPage from "./pages/CartPage";
 import "./i18n";
@@ -27,6 +27,7 @@ function App() {
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/products/:id" element={<ProductPage />} />
+        <Route path="/regions/:regionid" element={<RegionPage />} />
         {/* <Route path="/cart" element={<CartPage />} /> */}
       </Routes>
       <Footer />
