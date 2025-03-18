@@ -89,7 +89,13 @@ const Home = () => {
           </div>
         </div>
       </section>
-
+       {/* Regional highlights */}
+      <section className="py-12 px-4 md:px-6 lg:px-8">
+        <div className="container mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">Explore Northeast India</h2>
+          <RegionalHighlights />
+        </div>
+      </section>
       {/* Newsletter */}
       <section className="py-12 px-4 md:px-6 lg:px-8 bg-amber-600 text-white">
         <div className="container mx-auto max-w-4xl text-center">

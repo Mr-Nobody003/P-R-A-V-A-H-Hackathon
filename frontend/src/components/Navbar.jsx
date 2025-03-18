@@ -1,13 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef();
 
   const handleLogout = () => {
     logout();
@@ -18,27 +19,64 @@ const Navbar = () => {
     i18n.changeLanguage(lang);
   };
 
+  // Close the dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <nav className="bg-white shadow-md p-4">
       <div className="container mx-auto flex justify-between items-center">
         {/* Brand */}
-        <Link to="/" className="text-xl font-bold">Northeast Crafts</Link>
+        <Link to="/" className="flex flex-row text-xl items-center font-bold">
+          <img
+            src="https://b2737668.smushcdn.com/2737668/wp-content/uploads/2023/10/android-chrome-192x192-1.png?lossy=1&strip=1&webp=1"
+            alt="Logo"
+            className="h-10 w-10 mr-2"
+          />
+          Northeast Crafts
+        </Link>
 
         {/* Hamburger for Mobile */}
-        <div className="md:hidden">
-          <button onClick={() => setIsOpen(!isOpen)}>
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-        </div>
+      <div className="md:hidden relative" ref={dropdownRef}>
+        <button onClick={() => setIsOpen(!isOpen)}>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {isOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
 
-        {/* Navigation Links */}
-        <div className={`flex-col md:flex md:flex-row md:items-center md:space-x-6 space-y-4 md:space-y-0 mt-4 md:mt-0 ${isOpen ? 'flex' : 'hidden'}`}>
+        {/* Dropdown menu */}
+        <div className={`absolute right-0 top-12 bg-white shadow-lg p-4 mt-2 rounded w-64 z-50 ${isOpen ? 'block' : 'hidden'}`}>
+          <Link to="/" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Home</Link>
+          <Link to="/products" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Products</Link>
+          <Link to="/artisans" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Artisans</Link>
+          <Link to="/region" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Region</Link>
+          <Link to="/about" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">About</Link>
+          <Link to="/cart" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Cart</Link>
+          {user ? (
+            <>
+              <Link to="/profile" onClick={() => setIsOpen(false)} className="block py-2 hover:text-blue-600">Profile</Link>
+              <button onClick={() => { handleLogout(); setIsOpen(false); }} className="block py-2 text-red-500">Logout</button>
+            </>
+          ) : (
+            <Link to="/login" onClick={() => setIsOpen(false)} className="block py-2 text-blue-600">Login</Link>
+          )}
+        </div>
+      </div>
+
+
+        {/* Navigation Links for Desktop */}
+        <div className="hidden md:flex md:flex-row md:items-center md:space-x-6">
           <Link to="/" className="hover:text-blue-600">Home</Link>
           <Link to="/products" className="hover:text-blue-600">Products</Link>
           <Link to="/artisans" className="hover:text-blue-600">Artisans</Link>
@@ -47,7 +85,7 @@ const Navbar = () => {
 
           {/* Cart Icon */}
           <Link to="/cart" className="hover:text-blue-600 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
               <path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z" />
             </svg>
           </Link>
@@ -68,14 +106,8 @@ const Navbar = () => {
           {/* Authentication */}
           {user ? (
             <div className="flex items-center space-x-4">
-              <Link to="/profile" className="hover:text-blue-600 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
-                  <path d="M480-480q-79 0-134.5-55.5T290-670q0-79 55.5-134.5T480-860q79 0 134.5 55.5T670-670q0 79-55.5 134.5T480-480Zm0 80q108 0 182-74t74-182q0-108-74-182T480-780q-108 0-182 74t-74 182q0 108 74 182t182 74Zm0 360q-132 0-252-50t-220-138q-10-9-10-22t10-22q98-88 220-138t252-50q132 0 252 50t220 138q10 9 10 22t-10 22q-98 88-220 138t-252 50Zm0-80q108 0 206.5-38.5T872-295q-85-70-183.5-108.5T480-442q-108 0-206.5 38.5T88-295q85 70 183.5 108.5T480-148Z" />
-                </svg>
-              </Link>
-              <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded">
-                Logout
-              </button>
+              <Link to="/profile" className="hover:text-blue-600">Profile</Link>
+              <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded">Logout</button>
             </div>
           ) : (
             <Link to="/login" className="bg-blue-600 text-white px-4 py-2 rounded">Login</Link>
