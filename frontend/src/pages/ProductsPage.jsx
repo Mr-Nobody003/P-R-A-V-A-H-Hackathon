@@ -81,7 +81,7 @@ const ProductsPage = () => {
           <Slider
             range
             min={0}
-            max={500}
+            max={100000}
             step={10}
             value={filters.priceRange}
             onChange={(value) => setFilters({ ...filters, priceRange: value })}
