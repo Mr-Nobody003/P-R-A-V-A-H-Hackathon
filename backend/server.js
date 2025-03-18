@@ -227,12 +227,12 @@ const authMiddleware = (req, res, next) => {
 
   
 
-app.post("/api/cart/add", authMiddleware, async (req, res) => {
+  app.post("/api/cart/add", authMiddleware, async (req, res) => {
     try {
         const userId = req.userId; // Extracted from authMiddleware
         const { productId } = req.body;
 
-        // Validate productId format
+        //Validate productId format
         if (!mongoose.Types.ObjectId.isValid(productId)) {
             return res.status(400).json({ message: "Invalid product ID format" });
         }
@@ -264,6 +264,24 @@ app.post("/api/cart/add", authMiddleware, async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 });
+
+//api to get shopping cart
+app.get("/api/cart", authMiddleware, async (req, res) => {
+    try {
+        const userId = req.userId; // Extracted from authMiddleware
+        
+        // Find user and populate cart items
+        const user = await User.findById(userId).populate("cart");
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ cart: user.cart });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
 
 
   app.listen(PORT, () => {
