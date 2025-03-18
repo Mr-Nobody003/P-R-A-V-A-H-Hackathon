@@ -12,6 +12,7 @@ import CategoriesPage from "./pages/CategoriesPage"
 import RegionPage from './pages/RegionPage';
 import ArtisanPage from "./pages/ArtisanPage";
 import Checkout from "./pages/Checkout";
+import Payment from "./pages/Payment";
 //import CartPage from "./pages/CartPage";
 import "./i18n";
 function App() {
@@ -19,6 +20,9 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
+
+
+      <Route path="/payment" element={<Payment />} />
         <Route path="/checkout" element={< Checkout/>} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/artisans/:artisanid" element={<ArtisanPage />} />
