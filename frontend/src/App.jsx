@@ -15,6 +15,8 @@ import Checkout from "./pages/Checkout";
 import Payment from "./pages/Payment";
 //import CartPage from "./pages/CartPage";
 
+
+
 import ArtisanRegistration from "./admin_page/RegisterArtisian";
 import Artisans_profile from "./admin_page/Artisans_profile";
 
