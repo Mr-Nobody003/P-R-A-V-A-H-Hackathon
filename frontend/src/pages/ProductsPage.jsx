@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiHeart, FiFilter, FiX, FiShoppingCart } from "react-icons/fi";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaSpinner } from "react-icons/fa"; // FIX: Added FaSpinner
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import { motion, AnimatePresence } from "framer-motion";
 
 //==================================================================
-// 1. SKELETON COMPONENT (IMPROVED TO MATCH PRODUCT CARD)
+// 1. SKELETON COMPONENT
 //==================================================================
 const SkeletonCard = () => (
     <div className="bg-white rounded-xl shadow-md overflow-hidden animate-pulse">
@@ -28,7 +27,7 @@ const SkeletonCard = () => (
 //==================================================================
 // 2. PRODUCT CARD COMPONENT
 //==================================================================
-const ProductCard = ({ product, isWishlisted, onWishlistToggle, onAddToCart, onNavigate }) => {
+const ProductCard = ({ product, isWishlisted, onWishlistToggle, onAddToCart, onNavigate, isAddToCartDisabled, isAddingToCart }) => {
     const handleWishlistClick = (e) => {
         e.stopPropagation();
         onWishlistToggle(product._id);
@@ -40,16 +39,10 @@ const ProductCard = ({ product, isWishlisted, onWishlistToggle, onAddToCart, onN
     };
 
     return (
-        <motion.div
-            layout
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        <div
             className="bg-white rounded-xl shadow-md overflow-hidden group relative cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
             onClick={() => onNavigate(product._id)}
         >
-            {/* --- Image Section --- */}
             <div className="relative">
                 <img
                     src={product.image || "https://via.placeholder.com/400"}
@@ -64,15 +57,9 @@ const ProductCard = ({ product, isWishlisted, onWishlistToggle, onAddToCart, onN
                     className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm rounded-full p-2.5 transition-all duration-300 hover:bg-white hover:scale-110"
                     aria-label="Toggle Wishlist"
                 >
-                    {isWishlisted ? (
-                        <FaHeart className="text-red-500" size={18} />
-                    ) : (
-                        <FiHeart className="text-gray-700" size={18} />
-                    )}
+                    {isWishlisted ? <FaHeart className="text-red-500" size={18} /> : <FiHeart className="text-gray-700" size={18} />}
                 </button>
             </div>
-
-            {/* --- Info & Action Section --- */}
             <div className="p-4 flex flex-col justify-between h-40">
                 <div>
                     <h3 className="text-lg font-bold text-gray-800 truncate" title={product.name}>
@@ -84,32 +71,35 @@ const ProductCard = ({ product, isWishlisted, onWishlistToggle, onAddToCart, onN
                     <p className="text-2xl font-black text-gray-900">
                         ₹{product.price.toLocaleString()}
                     </p>
+                    {/* FIX: Updated button to show spinner during API call */}
                     <button
                         onClick={handleAddToCartClick}
-                        className="bg-gray-800 text-white rounded-lg p-3 transition-colors duration-300 hover:bg-teal-600"
-                        aria-label="Add to Cart"
+                        className={`text-white rounded-lg p-3 transition-colors duration-300 w-12 h-12 flex items-center justify-center ${
+                            isAddToCartDisabled 
+                                ? 'cursor-not-allowed bg-gray-400' 
+                                : isAddingToCart
+                                ? 'cursor-wait bg-teal-600'
+                                : 'bg-gray-800 hover:bg-teal-600'
+                        }`}
+                        aria-label={isAddToCartDisabled ? "Please log in to add to cart" : "Add to Cart"}
+                        disabled={isAddToCartDisabled || isAddingToCart}
                     >
-                        <FiShoppingCart size={20} />
+                        {isAddingToCart ? <FaSpinner className="animate-spin" size={20} /> : <FiShoppingCart size={20} />}
                     </button>
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 };
 
 //==================================================================
-// 3. FILTER SIDEBAR COMPONENT (CORRECTED)
+// 3. FILTER SIDEBAR COMPONENT
 //==================================================================
 const FilterSidebar = ({ filters, onFilterChange, onPriceChange, onClearFilters }) => {
     const categories = ["Textiles", "Pottery", "Jewelry", "Woodwork", "Accessories"];
     const regions = ["Assam", "Nagaland", "Manipur", "Meghalaya"];
-
-    // Derive slider value from filters, with fallbacks
-    const sliderValue = [
-        Number(filters.minPrice) || 0,
-        Number(filters.maxPrice) || 100000
-    ];
-
+    const sliderValue = [Number(filters.minPrice) || 0, Number(filters.maxPrice) || 100000];
+    
     return (
         <div className="space-y-6">
             <div>
@@ -138,14 +128,8 @@ const FilterSidebar = ({ filters, onFilterChange, onPriceChange, onClearFilters 
                 <h3 className="text-lg font-semibold text-gray-700 mb-3">Price Range</h3>
                 <div className="px-1">
                     <Slider
-                        range
-                        min={0}
-                        max={100000}
-                        step={1000}
-                        // FIX: Use `value` for a controlled component
-                        value={sliderValue}
-                        // FIX: Use `onChange` for smoother UX
-                        onChange={onPriceChange}
+                        range min={0} max={100000} step={1000}
+                        value={sliderValue} onChange={onPriceChange}
                         trackStyle={[{ backgroundColor: "#0d9488" }]}
                         handleStyle={[{ borderColor: "#0d9488" }, { borderColor: "#0d9488" }]}
                     />
@@ -164,7 +148,6 @@ const FilterSidebar = ({ filters, onFilterChange, onPriceChange, onClearFilters 
     );
 };
 
-
 //==================================================================
 // 4. MAIN PRODUCTS PAGE COMPONENT
 //==================================================================
@@ -177,10 +160,19 @@ const ProductsPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    
+    // FIX: State to track which product is being added to the cart
+    const [addingToCartId, setAddingToCartId] = useState(null);
 
     const navigate = useNavigate();
     const location = useLocation();
     const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5556";
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        setIsLoggedIn(!!token);
+    }, []);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -195,7 +187,6 @@ const ProductsPage = () => {
                 setProducts(data);
             } catch (err) {
                 setError("Failed to fetch products. Please try again later.");
-                console.error(err);
             } finally {
                 setLoading(false);
             }
@@ -208,34 +199,65 @@ const ProductsPage = () => {
     }, [wishlist]);
 
     const toggleWishlist = (id) => {
+        if (!isLoggedIn) {
+            alert('Please log in to manage your wishlist.');
+            navigate('/login', { state: { from: location } });
+            return;
+        }
         setWishlist((prev) =>
             prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
         );
     };
 
-    // FIX: ADDED THIS HANDLER
-    const handleAddToCart = (product) => {
-        alert(`${product.name} added to cart!`);
-        // Here you would typically call an API to add the item to the user's cart
+    // FIX: Updated handler to call the backend API
+    const handleAddToCart = async (product) => {
+        if (!isLoggedIn) {
+            alert('Please log in to add items to your cart.');
+            navigate('/login', { state: { from: location } });
+            return;
+        }
+
+        setAddingToCartId(product._id); // Start loading spinner
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_URL}/api/cart/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token,
+                },
+                body: JSON.stringify({ productId: product._id }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to add item to cart.');
+            }
+            
+            alert(`${product.name} added to cart!`);
+
+        } catch (err) {
+            console.error('Add to cart error:', err);
+            alert(`Error: ${err.message}`);
+        } finally {
+            setAddingToCartId(null); // Stop loading spinner
+        }
     };
 
     const handleFilterChange = (key, value) => {
         const params = new URLSearchParams(location.search);
-        if (params.get(key) === value) {
-            params.delete(key);
-        } else {
-            params.set(key, value);
-        }
+        if (params.get(key) === value) params.delete(key);
+        else params.set(key, value);
         navigate(`/products?${params.toString()}`);
         if (isFilterOpen) setIsFilterOpen(false);
     };
 
-    // FIX: UPDATED PRICE CHANGE HANDLER FOR SMOOTHER UX
     const handlePriceChange = (value) => {
         const params = new URLSearchParams(location.search);
         params.set('minPrice', value[0]);
         params.set('maxPrice', value[1]);
-        // Use replace to avoid polluting browser history with every small slider move
         navigate(`/products?${params.toString()}`, { replace: true });
     };
 
@@ -268,10 +290,8 @@ const ProductsPage = () => {
                     <aside className="hidden lg:block w-full lg:w-1/4 xl:w-1/5">
                         <h2 className="text-2xl font-bold text-gray-800 mb-4">Filters</h2>
                         <FilterSidebar
-                            filters={currentFilters}
-                            onFilterChange={handleFilterChange}
-                            onPriceChange={handlePriceChange}
-                            onClearFilters={clearFilters}
+                            filters={currentFilters} onFilterChange={handleFilterChange}
+                            onPriceChange={handlePriceChange} onClearFilters={clearFilters}
                         />
                     </aside>
 
@@ -294,59 +314,53 @@ const ProductsPage = () => {
                             </select>
                         </div>
 
-                        <AnimatePresence>
-                            <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                                {loading ? (
-                                    Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-                                ) : error ? (
-                                    <p className="col-span-full text-center text-red-500">{error}</p>
-                                ) : products.length > 0 ? (
-                                    products.map((product) => (
-                                        <ProductCard
-                                            key={product._id}
-                                            product={product}
-                                            isWishlisted={wishlist.includes(product._id)}
-                                            onWishlistToggle={toggleWishlist}
-                                            onNavigate={(id) => navigate(`/products/${id}`)}
-                                            onAddToCart={handleAddToCart} // FIX: PASS THE PROP
-                                        />
-                                    ))
-                                ) : (
-                                    <p className="col-span-full text-center text-gray-500">No products match your filters.</p>
-                                )}
-                            </motion.div>
-                        </AnimatePresence>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {loading ? (
+                                Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
+                            ) : error ? (
+                                <p className="col-span-full text-center text-red-500">{error}</p>
+                            ) : products.length > 0 ? (
+                                products.map((product) => (
+                                    <ProductCard
+                                        key={product._id}
+                                        product={product}
+                                        isWishlisted={wishlist.includes(product._id)}
+                                        onWishlistToggle={toggleWishlist}
+                                        onNavigate={(id) => navigate(`/products/${id}`)}
+                                        onAddToCart={handleAddToCart}
+                                        isAddToCartDisabled={!isLoggedIn}
+                                        // FIX: Pass loading status to the specific card
+                                        isAddingToCart={addingToCartId === product._id}
+                                    />
+                                ))
+                            ) : (
+                                <p className="col-span-full text-center text-gray-500">No products match your filters.</p>
+                            )}
+                        </div>
                     </main>
                 </div>
             </div>
 
-            <AnimatePresence>
-                {isFilterOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-                        onClick={() => setIsFilterOpen(false)}
+            {isFilterOpen && (
+                <div
+                    className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+                    onClick={() => setIsFilterOpen(false)}
+                >
+                    <div
+                        className="fixed top-0 left-0 h-full w-4/5 max-w-sm bg-white p-6 overflow-y-auto"
+                        onClick={e => e.stopPropagation()}
                     >
-                        <motion.div
-                            initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }}
-                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                            className="fixed top-0 left-0 h-full w-4/5 max-w-sm bg-white p-6 overflow-y-auto"
-                            onClick={e => e.stopPropagation()}
-                        >
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-bold text-gray-800">Filters</h2>
-                                <button onClick={() => setIsFilterOpen(false)} className="p-1"><FiX size={24} /></button>
-                            </div>
-                            <FilterSidebar
-                                filters={currentFilters}
-                                onFilterChange={handleFilterChange}
-                                onPriceChange={handlePriceChange}
-                                onClearFilters={clearFilters}
-                            />
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Filters</h2>
+                            <button onClick={() => setIsFilterOpen(false)} className="p-1"><FiX size={24} /></button>
+                        </div>
+                        <FilterSidebar
+                            filters={currentFilters} onFilterChange={handleFilterChange}
+                            onPriceChange={handlePriceChange} onClearFilters={clearFilters}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

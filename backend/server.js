@@ -15,7 +15,7 @@ const app = express();
 app.use(express.json()); // Middleware for JSON
 
 app.use(cors({
-  origin: ["https://northeast-crafts.vercel.app","http://localhost:5000"],
+  origin: ["https://northeast-crafts.vercel.app", "http://localhost:5000"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 }));
@@ -34,11 +34,12 @@ app.get("/", (req, res) => {
 });
 
 // =================================================================
-// 📌 THIS IS THE CORRECTED ROUTE FOR GETTING ALL PRODUCTS
+// PRODUCTS ROUTES
 // =================================================================
+
+// Get all products with filtering and sorting
 app.get("/api/products", async (req, res) => {
   try {
-    // 1. BUILD FILTER QUERY OBJECT
     const filterQuery = {};
     if (req.query.category) {
       filterQuery.category = req.query.category;
@@ -56,7 +57,6 @@ app.get("/api/products", async (req, res) => {
       }
     }
 
-    // 2. BUILD SORT OPTIONS OBJECT
     let sortOptions = {};
     switch (req.query.sort) {
       case "price_asc":
@@ -70,10 +70,7 @@ app.get("/api/products", async (req, res) => {
         break;
     }
     
-    // 3. EXECUTE THE QUERY WITH FILTERS AND SORTING
-    // Pass the filterQuery object to Product.find()
     const products = await Product.find(filterQuery).sort(sortOptions);
-
     res.json(products);
 
   } catch (err) {
@@ -82,7 +79,7 @@ app.get("/api/products", async (req, res) => {
   }
 });
  
-// Get a single product by ID (Use MongoDB's `_id`)
+// Get a single product by ID
 app.get("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -93,7 +90,7 @@ app.get("/api/products/:id", async (req, res) => {
   }
 });
  
-// Add a new product (MongoDB auto-generates `_id`)
+// Add a new product
 app.post("/api/products", async (req, res) => {
   try {
     const { name, category, price, image, description, region, likes, comments, artisanId } = req.body;
@@ -121,17 +118,10 @@ app.post("/api/products", async (req, res) => {
   }
 });
 
-// =================================================================
-// 📌 THIS ROUTE IS NO LONGER NEEDED AND CAN BE DELETED
-// The main `/api/products` route now handles category filtering.
-// =================================================================
-/*
-app.get("/api/products/category/:category", async (req, res) => {
-  // ... this logic is now inside GET /api/products
-});
-*/
 
-// ... the rest of your code ...
+// =================================================================
+// ARTISAN ROUTES
+// =================================================================
 
 // Get all artisans
 app.get("/api/artisans", async (req, res) => {
@@ -168,8 +158,12 @@ app.post("/api/artisans", async (req, res) => {
     res.status(500).json({ message: "Error saving artisan" });
   }
 });
-  
-//signup api
+ 
+// =================================================================
+// USER & AUTH ROUTES
+// =================================================================
+
+// Signup api
 app.post("/api/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -189,7 +183,7 @@ app.post("/api/signup", async (req, res) => {
   }
 });
 
-//login api
+// Login api
 app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -208,8 +202,9 @@ app.post("/api/login", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-  
-//Middleware to Verify JWT
+ 
+// --- ADDED FROM ORIGINAL ---
+// Middleware to Verify JWT
 const authMiddleware = (req, res, next) => {
   const token = req.header("Authorization");
   if (!token) return res.status(401).json({ message: "Unauthorized" });
@@ -222,7 +217,126 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-// ... other routes like cart, orders, etc. ...
+// =================================================================
+// CART & ORDER ROUTES
+// =================================================================
+
+// --- ADDED FROM ORIGINAL ---
+// API to add to cart
+app.post("/api/cart/add", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { productId } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ message: "Invalid product ID format" });
+    }
+    const objectId = new mongoose.Types.ObjectId(productId);
+
+    const product = await Product.findById(objectId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.cart.includes(objectId)) {
+      return res.status(400).json({ message: "Product already in cart" });
+    }
+
+    user.cart.push(objectId);
+    await user.save();
+
+    res.status(200).json({ message: "Product added to cart", cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// --- ADDED FROM ORIGINAL ---
+// API to get shopping cart
+app.get("/api/cart", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId).populate("cart");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// --- ADDED FROM ORIGINAL ---
+// API to place an order
+app.post("/api/orders/create", authMiddleware, async (req, res) => {
+  try {
+    const { products, address } = req.body;
+    const userId = req.userId;
+
+    const productIds = products.map((product) => product.productId);
+    const foundProducts = await Product.find({ _id: { $in: productIds } });
+
+    if (foundProducts.length !== productIds.length) {
+      return res.status(400).json({ error: "Some products not found" });
+    }
+
+    const totalAmount = foundProducts.reduce((sum, product) => sum + product.price, 0);
+
+    const newOrder = new Order({
+      userId,
+      products: productIds,
+      totalAmount,
+      address,
+    });
+    await newOrder.save();
+
+    await User.findByIdAndUpdate(
+      userId,
+      { $push: { orders: newOrder._id } },
+      { new: true }
+    );
+
+    const invoice = {
+      orderId: newOrder._id,
+      userId: newOrder.userId,
+      products: foundProducts.map((product) => ({
+        name: product.name,
+        price: product.price,
+      })),
+      totalAmount: newOrder.totalAmount,
+      address: newOrder.address,
+      createdAt: newOrder.createdAt,
+    };
+
+    res.status(201).json(invoice);
+  } catch (error) {
+    console.error("Error creating order:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// --- ADDED FROM ORIGINAL ---
+// Register Artisan API
+app.post("/api/register-artisan", async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const existingUser = await RegisterArtisan.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: "Username already taken" });
+    }
+    const newArtisan = new RegisterArtisan({ username, password });
+    await newArtisan.save();
+    res.status(201).json({ message: "Artisan registered successfully" });
+  } catch (error) {
+    console.error("Error registering artisan:", error);
+    res.status(500).json({ message: "Failed to register artisan" });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
