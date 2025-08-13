@@ -24,28 +24,30 @@ import "./i18n";
 function App() {
   return (
     <Router>
-      <Navbar />
-      <Routes>
+      <div className="faded-bg">
+        <Navbar />
+        <Routes>
 
 
-      <Route path="/payment" element={<Payment />} />
-        <Route path="/checkout" element={< Checkout/>} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/artisans/:artisanid" element={<ArtisanPage />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/artisans" element={<Artisan />} />
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/categories" element={<CategoriesPage />} />
-        <Route path="/products/:id" element={<ProductPage />} />
-        <Route path="/regions/:regionid" element={<RegionPage />} />
-        {/* <Route path="/cart" element={<CartPage />} /> */}
-        <Route path="/admin/artisian_registration" element={<ArtisanRegistration />} />
-        <Route path="/admin/artisans_profile" element={<Artisans_profile />} />
-         
-      </Routes>
-      <Footer />
+        <Route path="/payment" element={<Payment />} />
+          <Route path="/checkout" element={< Checkout/>} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/artisans/:artisanid" element={<ArtisanPage />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/artisans" element={<Artisan />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/products/:id" element={<ProductPage />} />
+          <Route path="/regions/:regionid" element={<RegionPage />} />
+          {/* <Route path="/cart" element={<CartPage />} /> */}
+          <Route path="/admin/artisian_registration" element={<ArtisanRegistration />} />
+          <Route path="/admin/artisans_profile" element={<Artisans_profile />} />
+          
+        </Routes>
+        <Footer />
+      </div>
     </Router>
   );
 }

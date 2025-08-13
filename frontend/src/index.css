@@ -17,4 +17,11 @@
   .animate-slide-up {
     animation: slideUp 1.2s ease-out forwards;
   }
-  
+
+body {
+  /* This applies a semi-transparent white layer on top of your image, creating the faded look */
+  background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('./assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
