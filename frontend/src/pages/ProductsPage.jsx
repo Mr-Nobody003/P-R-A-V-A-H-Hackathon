@@ -1,229 +1,354 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FiHeart, FiMessageSquare } from "react-icons/fi";
+import { FiHeart, FiFilter, FiX, FiShoppingCart } from "react-icons/fi";
+import { FaHeart } from "react-icons/fa";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
+import { motion, AnimatePresence } from "framer-motion";
 
-const ProductsPage = () => {
-  const [products, setProducts] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [sortBy, setSortBy] = useState("");
-  const [filters, setFilters] = useState({
-    category: "",
-    region: "",
-    artist: "",
-    priceRange: [0, 100000],
-  });
+//==================================================================
+// 1. SKELETON COMPONENT (IMPROVED TO MATCH PRODUCT CARD)
+//==================================================================
+const SkeletonCard = () => (
+    <div className="bg-white rounded-xl shadow-md overflow-hidden animate-pulse">
+        <div className="w-full h-56 bg-gray-200"></div>
+        <div className="p-4 h-40 flex flex-col justify-between">
+            <div>
+                <div className="h-6 rounded-md bg-gray-200 w-3/4 mb-2"></div>
+                <div className="h-4 rounded-md bg-gray-200 w-1/2 mb-4"></div>
+            </div>
+            <div className="flex justify-between items-center">
+                <div className="h-8 rounded-md bg-gray-200 w-1/3"></div>
+                <div className="h-12 w-12 rounded-lg bg-gray-200"></div>
+            </div>
+        </div>
+    </div>
+);
 
-  const navigate = useNavigate();
-  const location = useLocation();
-  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5556";
-
-  const getCategoryFromUrl = () => {
-    const params = new URLSearchParams(location.search);
-    return params.get("category") || "";
-  };
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const category = getCategoryFromUrl();
-        let response;
-
-        // If category selected, call new API
-        if (category) {
-          response = await fetch(`${API_URL}/api/products/category/${category}`);
-        } else {
-          // If no category, fetch all products
-          response = await fetch(`${API_URL}/api/products`);
-        }
-
-        if (!response.ok) throw new Error("Failed to fetch products");
-        const data = await response.json();
-        setProducts(data);
-        // Auto-select category if passed via URL
-        setFilters((prev) => ({ ...prev, category }));
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+//==================================================================
+// 2. PRODUCT CARD COMPONENT
+//==================================================================
+const ProductCard = ({ product, isWishlisted, onWishlistToggle, onAddToCart, onNavigate }) => {
+    const handleWishlistClick = (e) => {
+        e.stopPropagation();
+        onWishlistToggle(product._id);
     };
 
-    fetchProducts();
-  }, [location.search]);
+    const handleAddToCartClick = (e) => {
+        e.stopPropagation();
+        onAddToCart(product);
+    };
 
-  // 📌 Toggle Wishlist
-  const toggleWishlist = (id) => {
-    setWishlist((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
-
-  // 📌 Filter & Sort Products
-  const filteredProducts = products
-    .filter((product) => {
-      return (
-        (filters.category === "" || product.category === filters.category) &&
-        (filters.region === "" || product.region === filters.region) &&
-        (filters.artist === "" || product.artist === filters.artist) &&
-        product.price >= filters.priceRange[0] &&
-        product.price <= filters.priceRange[1]
-      );
-    })
-    .sort((a, b) => {
-      if (sortBy === "priceLowHigh") return a.price - b.price;
-      if (sortBy === "priceHighLow") return b.price - a.price;
-      return 0;
-    });
-
-  // 📌 Handle Category Filter Change
-  const handleCategoryChange = (e) => {
-    const selectedCategory = e.target.value;
-    if (selectedCategory) {
-      navigate(`/products?category=${selectedCategory}`);
-    } else {
-      navigate(`/products`);
-    }
-  };
-
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 text-center mb-6">
-        Explore Handcrafted Treasures
-      </h1>
-
-      {/* Loading & Error Handling */}
-      {loading && (
-        <p className="text-center text-gray-600">Loading products...</p>
-      )}
-      {error && <p className="text-center text-red-500">{error}</p>}
-
-      {/* Sorting & Filtering Options */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-        {/* Price Range Slider */}
-        <div className="flex flex-col items-center w-64">
-          <label className="text-sm text-gray-700">
-            Price Range: ₹{filters.priceRange[0]} - ₹{filters.priceRange[1]}
-          </label>
-          <Slider
-            range
-            min={0}
-            max={100000}
-            step={10}
-            value={filters.priceRange}
-            onChange={(value) =>
-              setFilters({ ...filters, priceRange: value })
-            }
-            trackStyle={[{ backgroundColor: "#4CAF50" }]}
-            handleStyle={[
-              { borderColor: "#4CAF50" },
-              { borderColor: "#4CAF50" },
-            ]}
-          />
-        </div>
-
-        {/* Sorting */}
-        <select
-          onChange={(e) => setSortBy(e.target.value)}
-          className="border border-gray-300 rounded-lg px-4 py-2"
+    return (
+        <motion.div
+            layout
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="bg-white rounded-xl shadow-md overflow-hidden group relative cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+            onClick={() => onNavigate(product._id)}
         >
-          <option value="">Sort By</option>
-          <option value="priceLowHigh">Price: Low to High</option>
-          <option value="priceHighLow">Price: High to Low</option>
-        </select>
-
-        {/* Category Filter (Restored!) */}
-        <select
-          name="category"
-          value={filters.category}
-          onChange={handleCategoryChange}
-          className="border border-gray-300 rounded-lg px-4 py-2"
-        >
-          <option value="">All Categories</option>
-          <option value="Textiles">Textiles</option>
-          <option value="Pottery">Pottery</option>
-          <option value="Jewelry">Jewelry</option>
-          <option value="Woodwork">Woodwork</option>
-          <option value="Accessories">Accessories</option>
-        </select>
-
-        {/* Region Filter */}
-        <select
-          name="region"
-          onChange={(e) => setFilters({ ...filters, region: e.target.value })}
-          className="border border-gray-300 rounded-lg px-4 py-2"
-        >
-          <option value="">All Regions</option>
-          <option value="Assam">Assam</option>
-          <option value="Nagaland">Nagaland</option>
-          <option value="Manipur">Manipur</option>
-          <option value="Meghalaya">Meghalaya</option>
-        </select>
-      </div>
-
-      {/* Product Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
-            <div
-              key={product._id}
-              className="group relative cursor-pointer overflow-hidden rounded-lg"
-              onClick={() => navigate(`/products/${product._id}`)}
-            >
-              {/* Product Image */}
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-60 object-cover group-hover:scale-110 transition-transform duration-300"
-              />
-
-              {/* Product Info */}
-              <div className="p-2 text-center">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {product.name}
-                </h2>
-                <p className="text-sm text-gray-600">
-                  ₹{product.price.toFixed(2)}
-                </p>
-
-                {/* Likes & Comments Count */}
-                <div className="flex justify-center gap-4 text-gray-600 text-sm mt-2">
-                  <span
-                    className="flex items-center gap-1 cursor-pointer"
-                    onClick={() => toggleWishlist(product._id)}
-                  >
-                    <FiHeart
-                      className={
-                        wishlist.includes(product._id)
-                          ? "text-red-500"
-                          : "text-gray-400"
-                      }
-                    />
-                    {product.likes} Likes
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <FiMessageSquare className="text-blue-500" />
-                    {product.comments} Comments
-                  </span>
-                </div>
-              </div>
+            {/* --- Image Section --- */}
+            <div className="relative">
+                <img
+                    src={product.image || "https://via.placeholder.com/400"}
+                    alt={product.name}
+                    className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <span className="absolute top-3 left-3 bg-teal-100 text-teal-800 text-xs font-bold px-3 py-1 rounded-full">
+                    {product.category}
+                </span>
+                <button
+                    onClick={handleWishlistClick}
+                    className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm rounded-full p-2.5 transition-all duration-300 hover:bg-white hover:scale-110"
+                    aria-label="Toggle Wishlist"
+                >
+                    {isWishlisted ? (
+                        <FaHeart className="text-red-500" size={18} />
+                    ) : (
+                        <FiHeart className="text-gray-700" size={18} />
+                    )}
+                </button>
             </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-500 col-span-full">
-            No products found.
-          </p>
-        )}
-      </div>
-    </div>
-  );
+
+            {/* --- Info & Action Section --- */}
+            <div className="p-4 flex flex-col justify-between h-40">
+                <div>
+                    <h3 className="text-lg font-bold text-gray-800 truncate" title={product.name}>
+                        {product.name}
+                    </h3>
+                    <p className="text-sm text-gray-500">by {product.region || 'Artisan'}</p>
+                </div>
+                <div className="flex justify-between items-center mt-2">
+                    <p className="text-2xl font-black text-gray-900">
+                        ₹{product.price.toLocaleString()}
+                    </p>
+                    <button
+                        onClick={handleAddToCartClick}
+                        className="bg-gray-800 text-white rounded-lg p-3 transition-colors duration-300 hover:bg-teal-600"
+                        aria-label="Add to Cart"
+                    >
+                        <FiShoppingCart size={20} />
+                    </button>
+                </div>
+            </div>
+        </motion.div>
+    );
+};
+
+//==================================================================
+// 3. FILTER SIDEBAR COMPONENT (CORRECTED)
+//==================================================================
+const FilterSidebar = ({ filters, onFilterChange, onPriceChange, onClearFilters }) => {
+    const categories = ["Textiles", "Pottery", "Jewelry", "Woodwork", "Accessories"];
+    const regions = ["Assam", "Nagaland", "Manipur", "Meghalaya"];
+
+    // Derive slider value from filters, with fallbacks
+    const sliderValue = [
+        Number(filters.minPrice) || 0,
+        Number(filters.maxPrice) || 100000
+    ];
+
+    return (
+        <div className="space-y-6">
+            <div>
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">Category</h3>
+                <div className="space-y-2">
+                    {categories.map(cat => (
+                        <button key={cat} onClick={() => onFilterChange('category', cat)}
+                            className={`w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors ${filters.category === cat ? 'bg-teal-600 text-white font-semibold' : 'hover:bg-gray-100'}`}>
+                            {cat}
+                        </button>
+                    ))}
+                </div>
+            </div>
+            <div>
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">Region</h3>
+                <div className="space-y-2">
+                    {regions.map(reg => (
+                        <button key={reg} onClick={() => onFilterChange('region', reg)}
+                            className={`w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors ${filters.region === reg ? 'bg-teal-600 text-white font-semibold' : 'hover:bg-gray-100'}`}>
+                            {reg}
+                        </button>
+                    ))}
+                </div>
+            </div>
+            <div>
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">Price Range</h3>
+                <div className="px-1">
+                    <Slider
+                        range
+                        min={0}
+                        max={100000}
+                        step={1000}
+                        // FIX: Use `value` for a controlled component
+                        value={sliderValue}
+                        // FIX: Use `onChange` for smoother UX
+                        onChange={onPriceChange}
+                        trackStyle={[{ backgroundColor: "#0d9488" }]}
+                        handleStyle={[{ borderColor: "#0d9488" }, { borderColor: "#0d9488" }]}
+                    />
+                    <div className="flex justify-between text-sm text-gray-600 mt-2">
+                        <span>₹{sliderValue[0].toLocaleString()}</span>
+                        <span>₹{sliderValue[1].toLocaleString()}</span>
+                    </div>
+                </div>
+            </div>
+            <button
+                onClick={onClearFilters}
+                className="w-full py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-semibold">
+                Clear All Filters
+            </button>
+        </div>
+    );
+};
+
+
+//==================================================================
+// 4. MAIN PRODUCTS PAGE COMPONENT
+//==================================================================
+const ProductsPage = () => {
+    const [products, setProducts] = useState([]);
+    const [wishlist, setWishlist] = useState(() => {
+        const saved = localStorage.getItem("wishlist");
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5556";
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            setLoading(true);
+            setError("");
+            try {
+                const params = new URLSearchParams(location.search);
+                if (!params.has('sort')) params.set('sort', 'createdAt_desc');
+                const response = await fetch(`${API_URL}/api/products?${params.toString()}`);
+                if (!response.ok) throw new Error("Network response was not ok");
+                const data = await response.json();
+                setProducts(data);
+            } catch (err) {
+                setError("Failed to fetch products. Please try again later.");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProducts();
+    }, [location.search, API_URL]);
+
+    useEffect(() => {
+        localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    }, [wishlist]);
+
+    const toggleWishlist = (id) => {
+        setWishlist((prev) =>
+            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+        );
+    };
+
+    // FIX: ADDED THIS HANDLER
+    const handleAddToCart = (product) => {
+        alert(`${product.name} added to cart!`);
+        // Here you would typically call an API to add the item to the user's cart
+    };
+
+    const handleFilterChange = (key, value) => {
+        const params = new URLSearchParams(location.search);
+        if (params.get(key) === value) {
+            params.delete(key);
+        } else {
+            params.set(key, value);
+        }
+        navigate(`/products?${params.toString()}`);
+        if (isFilterOpen) setIsFilterOpen(false);
+    };
+
+    // FIX: UPDATED PRICE CHANGE HANDLER FOR SMOOTHER UX
+    const handlePriceChange = (value) => {
+        const params = new URLSearchParams(location.search);
+        params.set('minPrice', value[0]);
+        params.set('maxPrice', value[1]);
+        // Use replace to avoid polluting browser history with every small slider move
+        navigate(`/products?${params.toString()}`, { replace: true });
+    };
+
+    const handleSortChange = (e) => {
+        const params = new URLSearchParams(location.search);
+        params.set('sort', e.target.value);
+        navigate(`/products?${params.toString()}`);
+    }
+
+    const clearFilters = () => {
+        navigate('/products');
+        if (isFilterOpen) setIsFilterOpen(false);
+    };
+
+    const currentFilters = Object.fromEntries(new URLSearchParams(location.search));
+
+    return (
+        <div className="bg-gray-50 min-h-screen">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="text-center mb-10">
+                    <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl">
+                        Our Artisan Collection
+                    </h1>
+                    <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-500">
+                        Discover unique, handcrafted treasures from talented artisans.
+                    </p>
+                </div>
+
+                <div className="flex flex-col lg:flex-row gap-8">
+                    <aside className="hidden lg:block w-full lg:w-1/4 xl:w-1/5">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-4">Filters</h2>
+                        <FilterSidebar
+                            filters={currentFilters}
+                            onFilterChange={handleFilterChange}
+                            onPriceChange={handlePriceChange}
+                            onClearFilters={clearFilters}
+                        />
+                    </aside>
+
+                    <main className="flex-1">
+                        <div className="flex justify-between items-center mb-6">
+                            <button
+                                onClick={() => setIsFilterOpen(true)}
+                                className="lg:hidden flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                                <FiFilter />
+                                <span>Filters</span>
+                            </button>
+                            <div className="text-sm text-gray-600 hidden sm:block">
+                                {loading ? 'Searching...' : `${products.length} products found`}
+                            </div>
+                            <select onChange={handleSortChange} value={currentFilters.sort || 'createdAt_desc'}
+                                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
+                                <option value="createdAt_desc">Newest</option>
+                                <option value="price_asc">Price: Low to High</option>
+                                <option value="price_desc">Price: High to Low</option>
+                            </select>
+                        </div>
+
+                        <AnimatePresence>
+                            <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                                {loading ? (
+                                    Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+                                ) : error ? (
+                                    <p className="col-span-full text-center text-red-500">{error}</p>
+                                ) : products.length > 0 ? (
+                                    products.map((product) => (
+                                        <ProductCard
+                                            key={product._id}
+                                            product={product}
+                                            isWishlisted={wishlist.includes(product._id)}
+                                            onWishlistToggle={toggleWishlist}
+                                            onNavigate={(id) => navigate(`/products/${id}`)}
+                                            onAddToCart={handleAddToCart} // FIX: PASS THE PROP
+                                        />
+                                    ))
+                                ) : (
+                                    <p className="col-span-full text-center text-gray-500">No products match your filters.</p>
+                                )}
+                            </motion.div>
+                        </AnimatePresence>
+                    </main>
+                </div>
+            </div>
+
+            <AnimatePresence>
+                {isFilterOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+                        onClick={() => setIsFilterOpen(false)}
+                    >
+                        <motion.div
+                            initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                            className="fixed top-0 left-0 h-full w-4/5 max-w-sm bg-white p-6 overflow-y-auto"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-2xl font-bold text-gray-800">Filters</h2>
+                                <button onClick={() => setIsFilterOpen(false)} className="p-1"><FiX size={24} /></button>
+                            </div>
+                            <FilterSidebar
+                                filters={currentFilters}
+                                onFilterChange={handleFilterChange}
+                                onPriceChange={handlePriceChange}
+                                onClearFilters={clearFilters}
+                            />
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
 };
 
 export default ProductsPage;
-
-
-
